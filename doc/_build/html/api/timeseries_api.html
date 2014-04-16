@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>timeseries &mdash; sampledoc 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="sampledoc 1.0 documentation" href="../index.html" />
+    <link rel="up" title="roipy API" href="index.html" />
+    <link rel="prev" title="plot" href="plot_api.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../_static/logo.png" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plot_api.html" title="plot"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">home</a>|&nbsp;</li>
+        <li><a href="../search.html">search</a>|&nbsp;</li>
+
+          <li><a href="index.html" accesskey="U">roipy API</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">timeseries</a><ul>
+<li><a class="reference internal" href="#roipy-timeseries-module"><tt class="docutils literal"><span class="pre">roipy.timeseries</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="plot_api.html"
+                        title="previous chapter">plot</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/timeseries_api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="timeseries">
+<h1>timeseries<a class="headerlink" href="#timeseries" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="roipy-timeseries-module">
+<h2><a class="reference internal" href="#module-roipy.timeseries" title="roipy.timeseries"><tt class="xref py py-mod docutils literal"><span class="pre">roipy.timeseries</span></tt></a> Module<a class="headerlink" href="#roipy-timeseries-module" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-roipy.timeseries"></span><p>SBAS timeseries code in python</p>
+<dl class="class">
+<dt id="roipy.timeseries.Timeseries">
+<em class="property">class </em><tt class="descclassname">roipy.timeseries.</tt><tt class="descname">Timeseries</tt><big>(</big><em>Set</em>, <em>runDirectory</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="roipy.timeseries.Timeseries.associate_files">
+<tt class="descname">associate_files</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.associate_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Files output by matlab routines</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.filter">
+<tt class="descname">filter</tt><big>(</big><em>date=None</em>, <em>IG=None</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience Method, Identical to Set.omit(IG=igList)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.filter_baselines">
+<tt class="descname">filter_baselines</tt><big>(</big><em>minBperp=130</em>, <em>listFile=None</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.filter_baselines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Omit any interferograms that have a perp baseline greater than
+&#8216;thresh&#8217;. Need list.out from dolist.m script... thresh=130m from
+Berardino 2002 SBAS paper</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.filter_timespans">
+<tt class="descname">filter_timespans</tt><big>(</big><em>minTime=2.0</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.filter_timespans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Omit any interferograms less than &#8216;minTime&#8217; years</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.get_coverage">
+<tt class="descname">get_coverage</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.get_coverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate data quality map</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.invert">
+<tt class="descname">invert</tt><big>(</big><em>method='svd'</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.invert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call desired inversion method
+&#8216;svd&#8217;
+&#8216;wdls&#8217;
+&#8216;svd_l1&#8217;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.invert_L1_svd">
+<tt class="descname">invert_L1_svd</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.invert_L1_svd" title="Permalink to this definition">¶</a></dt>
+<dd><p>SBAS time series inversion using L1 norm
+reference: Lauknes et. al. 2011 IEEE Transaction on Geoscience and Remote Sensing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.invert_L2_svd">
+<tt class="descname">invert_L2_svd</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.invert_L2_svd" title="Permalink to this definition">¶</a></dt>
+<dd><p>SBAS time series inversion using L2 norm
+reference: Berardino et. al. 2002 IEEE Transaction on Geoscience and Remote Sensing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.invert_L2_wdls">
+<tt class="descname">invert_L2_wdls</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.invert_L2_wdls" title="Permalink to this definition">¶</a></dt>
+<dd><p>perform time series inversion</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.load_files">
+<tt class="descname">load_files</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.load_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save .unw phase (unwraped &amp; converted to LOS displacement) and .msk
+coherence arrays as .npy binary files in  subfolders of timeseries run</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.load_ma">
+<tt class="descname">load_ma</tt><big>(</big><em>Interferogram</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.load_ma" title="Permalink to this definition">¶</a></dt>
+<dd><p>open phase and mask arrays in .npy format and return a numpy masked array</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.load_settings">
+<tt class="descname">load_settings</tt><big>(</big><em>outfile='settings.p'</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.load_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load previous settings from pickled dictionary</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.load_signal_mask">
+<tt class="descname">load_signal_mask</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.load_signal_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Custom mask identifying known signal in an interferogram 0=unknown
+1=known signal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.make_B">
+<tt class="descname">make_B</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.make_B" title="Permalink to this definition">¶</a></dt>
+<dd><p>make velocity connectivity matrix</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.mask_border">
+<tt class="descname">mask_border</tt><big>(</big><em>left=3</em>, <em>right=3</em>, <em>top=3</em>, <em>bottom=3</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.mask_border" title="Permalink to this definition">¶</a></dt>
+<dd><p>because edge pixels are often nonsense, remove specified number of
+pixels from the edges. Note that up=3 will remove 4 pixels from the
+top of the interferogram since python indexing starts at 0</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.mask_gradient">
+<tt class="descname">mask_gradient</tt><big>(</big><em>override=False</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.mask_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>use np.gradient() to get rid of isolated unwrapping errors (surrounded by nans and edge effects</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.mask_incoherent">
+<tt class="descname">mask_incoherent</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.mask_incoherent" title="Permalink to this definition">¶</a></dt>
+<dd><p>mask pixel values that have coherence values in .msk file less than specified threshold. 0=incoherent, 1=fully coherent</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.mask_sparse">
+<tt class="descname">mask_sparse</tt><big>(</big><em>threshold=10</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.mask_sparse" title="Permalink to this definition">¶</a></dt>
+<dd><p>mask pixels that are not coherent in more than &lt;threshold&gt; interferograms in a set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.plot_ig">
+<tt class="descname">plot_ig</tt><big>(</big><em>num=0</em>, <em>name=None</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.plot_ig" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.prep_matlab">
+<tt class="descname">prep_matlab</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.prep_matlab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write defaults.m needed for running the matlab timeseries scripts
+written by Paul Lundgren &amp; Noah Finnegan</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.remove_ramp">
+<tt class="descname">remove_ramp</tt><big>(</big><em>addmask=False</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.remove_ramp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a quadratic surface from the interferogram (e.g. residual
+ramps left over after re-estimating baselines in ROI_PAC). Subtracting
+the best-fit quadratic surface forces the mean surface displacement to
+be zero (equal amount of positive &amp; negative deformation within the
+scene). Therefore it is CRITICAL to exclude known signal and unwrapping
+errors before running this function!</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.run_all">
+<tt class="descname">run_all</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.run_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.save_ma">
+<tt class="descname">save_ma</tt><big>(</big><em>Interferogram</em>, <em>mask_array</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.save_ma" title="Permalink to this definition">¶</a></dt>
+<dd><p>save a masked array as a data array and logical array in .npy
+format. Prepend an optional prefix if desired</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.save_settings">
+<tt class="descname">save_settings</tt><big>(</big><em>outfile='settings.p'</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.save_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save timeseries settings to input file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.save_signal_mask">
+<tt class="descname">save_signal_mask</tt><big>(</big><em>outpath, regions=[(250, 350, 0, 100)]</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.save_signal_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>regions is a list of tuples (left,right,top,bottom)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.timeseries.Timeseries.unfilter">
+<tt class="descname">unfilter</tt><big>(</big><em>date=None</em>, <em>IG=None</em><big>)</big><a class="headerlink" href="#roipy.timeseries.Timeseries.unfilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience method to Set.remit(IG=igList)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plot_api.html" title="plot"
+             >previous</a> |</li>
+        <li><a href="../index.html">home</a>|&nbsp;</li>
+        <li><a href="../search.html">search</a>|&nbsp;</li>
+
+          <li><a href="index.html" >roipy API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, scott henderson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

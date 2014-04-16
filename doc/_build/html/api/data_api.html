@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>data &mdash; sampledoc 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="sampledoc 1.0 documentation" href="../index.html" />
+    <link rel="up" title="roipy API" href="index.html" />
+    <link rel="next" title="tools" href="tools_api.html" />
+    <link rel="prev" title="configuration" href="roipy_configuration_api.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../_static/logo.png" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_api.html" title="tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="roipy_configuration_api.html" title="configuration"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">home</a>|&nbsp;</li>
+        <li><a href="../search.html">search</a>|&nbsp;</li>
+
+          <li><a href="index.html" accesskey="U">roipy API</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">data</a><ul>
+<li><a class="reference internal" href="#module-roipy.data"><tt class="docutils literal"><span class="pre">roipy.data</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="roipy_configuration_api.html"
+                        title="previous chapter">configuration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tools_api.html"
+                        title="next chapter">tools</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/data_api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="data">
+<h1>data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-roipy.data">
+<span id="roipy-data-module"></span><h2><a class="reference internal" href="#module-roipy.data" title="roipy.data"><tt class="xref py py-mod docutils literal"><span class="pre">roipy.data</span></tt></a> Module<a class="headerlink" href="#module-roipy.data" title="Permalink to this headline">¶</a></h2>
+<p>Interferogram and Set classes for working with ROI_PAC output:
+attributes in UpperCase
+methods in lower_case</p>
+<dl class="class">
+<dt id="roipy.data.Geogram">
+<em class="property">class </em><tt class="descclassname">roipy.data.</tt><tt class="descname">Geogram</tt><big>(</big><em>filepath</em><big>)</big><a class="headerlink" href="#roipy.data.Geogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#roipy.data.Interferogram" title="roipy.data.Interferogram"><tt class="xref py py-class docutils literal"><span class="pre">roipy.data.Interferogram</span></tt></a></p>
+<p>Class for georectified files, for now only difference Georeferenced=True</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="roipy.data.Interferogram">
+<em class="property">class </em><tt class="descclassname">roipy.data.</tt><tt class="descname">Interferogram</tt><big>(</big><em>filepath</em><big>)</big><a class="headerlink" href="#roipy.data.Interferogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>General interferogram object (from any platform: ERS, Envisat, ALOS)
+Designed for BIL/RMG files output by ROI_PAC that have associated rsc&#8217;s</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">roi_py</span> <span class="kn">as</span> <span class="nn">rp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ig</span> <span class="o">=</span> <span class="n">rp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Interferogram</span><span class="p">(</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">interferogram</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">ig</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="roipy.data.Interferogram.add2rsc">
+<tt class="descname">add2rsc</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Interferogram.add2rsc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add custom header lines to rsc metadata stored in memory</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Interferogram.associate_files">
+<tt class="descname">associate_files</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Interferogram.associate_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add dictionary of associate ROI_PAC files to the Interferogram
+object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Interferogram.fix_timespan">
+<tt class="descname">fix_timespan</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Interferogram.fix_timespan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the missing &#8216;TIME_SPAN_YEAR&#8217; keyword to the .rsc file, get the
+timespan from extracting the second date from the DATE12 keyword</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Interferogram.get_dates">
+<tt class="descname">get_dates</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Interferogram.get_dates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract dates from the metadata and convert them to serial dates</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Interferogram.load_bil">
+<tt class="descname">load_bil</tt><big>(</big><em>dims=None</em><big>)</big><a class="headerlink" href="#roipy.data.Interferogram.load_bil" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load amplitude and phase array from BIL files (eg .unw) output by ROI_PAC</p>
+<p>self = roi_py.data.Interferogram instance
+dims = (width,length) tuple to override .rsc dimensions
+geo = True if .unw is georeferenced to maintain correct array orientation</p>
+<p>(leftArray, rightArray) = 2D numpy arrays</p>
+<p>look,head = incidence file
+amplitude,phase = .unw file
+slope,elevation = .hgt file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Interferogram.load_rsc">
+<tt class="descname">load_rsc</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Interferogram.load_rsc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read from unw.rsc file &amp; store metadata as an attribute dictionary
+named rsc</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Interferogram.setup">
+<tt class="descname">setup</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Interferogram.setup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roipy.data.Set">
+<em class="property">class </em><tt class="descclassname">roipy.data.</tt><tt class="descname">Set</tt><big>(</big><em>directory</em>, <em>prefix='rect'</em><big>)</big><a class="headerlink" href="#roipy.data.Set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for representing a set of rectified interferograms.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">track227</span> <span class="o">=</span> <span class="n">Set</span><span class="p">(</span><span class="o">&lt;</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">rectified</span><span class="o">/</span><span class="mi">227</span><span class="o">/</span><span class="n">interferograms</span><span class="o">&gt;</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">track227</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="roipy.data.Set.assign_baselines">
+<tt class="descname">assign_baselines</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Set.assign_baselines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use self.Baselines dictionary to assign perp baseline as ig attribute</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.get_chronlist">
+<tt class="descname">get_chronlist</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Set.get_chronlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a chronologically sorted list of IG files</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.get_dates">
+<tt class="descname">get_dates</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Set.get_dates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign lists of metadata values as instance attributes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.get_interferograms">
+<tt class="descname">get_interferograms</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Set.get_interferograms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign list of date pairs as Set() attributes in both YYMMDD format
+and serial format</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.get_time_index">
+<tt class="descname">get_time_index</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Set.get_time_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the time_index assigning an integer to each SAR acquistion
+in chronological order. Used to construct B matrix for SBAS inversion</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.get_time_intervals">
+<tt class="descname">get_time_intervals</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Set.get_time_intervals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subtract serial dates to get day intervals</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.load_baselines">
+<tt class="descname">load_baselines</tt><big>(</big><em>path='list.out'</em><big>)</big><a class="headerlink" href="#roipy.data.Set.load_baselines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read perpendicular baselines from list.out from dolist.m output,
+store as a dictionary {&#8216;date&#8217;: Bperp}</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.load_set">
+<tt class="descname">load_set</tt><big>(</big><em>prefix='rect_'</em><big>)</big><a class="headerlink" href="#roipy.data.Set.load_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a dictionary of Interferogram.General() instances from all rect*unw
+files in the specificed path</p>
+<p>igrams = Interferogram.load_set(os.getcwd())</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.match_date">
+<tt class="descname">match_date</tt><big>(</big><em>date</em><big>)</big><a class="headerlink" href="#roipy.data.Set.match_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of dates that pair with a given date</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.match_igrams">
+<tt class="descname">match_igrams</tt><big>(</big><em>Set</em>, <em>date</em><big>)</big><a class="headerlink" href="#roipy.data.Set.match_igrams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array of all interferograms containing a certain date (integer)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.merge_tandems">
+<tt class="descname">merge_tandems</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Set.merge_tandems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine SAR acquisitions that differ by only 1 day into a single date
+ASSUMPTION: one day&#8217;s deformation is NOT resolvable</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.next">
+<tt class="descname">next</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Set.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate through interferograms in chronological order</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.omit">
+<tt class="descname">omit</tt><big>(</big><em>date=False</em>, <em>IG=False</em>, <em>range=False</em><big>)</big><a class="headerlink" href="#roipy.data.Set.omit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Omit a particular interferogram or all interferograms containing a
+particular date from the time series.</p>
+<p>IMPORTANT! Run this method before running prep_matlab()</p>
+<p>date = single date in quotes, eg &#8216;20010812&#8217;
+IG = list of interferogram data identifiers, eg [&#8216;20010812-20100723&#8217;]
+range = tuple of start &amp; end dates, scrap all interferograms outside of range</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.query">
+<tt class="descname">query</tt><big>(</big><em>attr=None</em>, <em>val=None</em>, <em>outattr=None</em>, <em>IG=None</em><big>)</big><a class="headerlink" href="#roipy.data.Set.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search metadata for all interferograms and return a list of results</p>
+<p>&gt;&gt;&gt;query(IG=#)                          return metadata for the specified IG#
+&gt;&gt;&gt;query(&lt;metadata field&gt;)              return value of specified metadata field for all IGs
+&gt;&gt;&gt;query(&lt;metadata field&gt;, &lt;value&gt;)     return list of IGs sharing common metadata attribute
+&gt;&gt;&gt;query(&#8216;PLATFORM&#8217;,&#8217;ERS1&#8217;)             return list of ERS1 interferograms
+&gt;&gt;&gt;query(&#8216;PLATFORM&#8217;,&#8217;ERS2&#8217;,&#8217;DATE12&#8217;)    return list of ordered DATE12 values for ERS2 IGs
+&gt;&gt;&gt;query(IG=23)                         return metadata for interferogram #23 in the timeseries</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.remit">
+<tt class="descname">remit</tt><big>(</big><em>date=False</em>, <em>IG=False</em><big>)</big><a class="headerlink" href="#roipy.data.Set.remit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put an omitted date back into the timeseries</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roipy.data.Set.setup">
+<tt class="descname">setup</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.data.Set.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Associate important timeseries arrays with the interferogram
+ORDER MATTERS... eg self.Nig reset before get_interferograms()</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_api.html" title="tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="roipy_configuration_api.html" title="configuration"
+             >previous</a> |</li>
+        <li><a href="../index.html">home</a>|&nbsp;</li>
+        <li><a href="../search.html">search</a>|&nbsp;</li>
+
+          <li><a href="index.html" >roipy API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, scott henderson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

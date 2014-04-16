@@ -1,0 +1,193 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>configuration &mdash; sampledoc 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="sampledoc 1.0 documentation" href="../index.html" />
+    <link rel="up" title="roipy API" href="index.html" />
+    <link rel="next" title="data" href="data_api.html" />
+    <link rel="prev" title="roipy API" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../_static/logo.png" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="data_api.html" title="data"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="roipy API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">home</a>|&nbsp;</li>
+        <li><a href="../search.html">search</a>|&nbsp;</li>
+
+          <li><a href="index.html" accesskey="U">roipy API</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">configuration</a><ul>
+<li><a class="reference internal" href="#module-roipy"><tt class="docutils literal"><span class="pre">roipy</span></tt> Package</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">roipy API</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="data_api.html"
+                        title="next chapter">data</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/roipy_configuration_api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuration">
+<h1>configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-roipy">
+<span id="roipy-package"></span><h2><a class="reference internal" href="#module-roipy" title="roipy"><tt class="xref py py-mod docutils literal"><span class="pre">roipy</span></tt></a> Package<a class="headerlink" href="#module-roipy" title="Permalink to this headline">¶</a></h2>
+<p>Object-oriented package for post-processing ROI_PAC data in pylab.</p>
+<p><strong>Example Usage:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">roipy</span> <span class="kn">as</span> <span class="nn">rp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path89</span> <span class="o">=</span> <span class="s">&#39;examples/t6089/stack&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">set89</span> <span class="o">=</span> <span class="n">rp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="n">path89</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rp</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">browseSet</span><span class="p">(</span><span class="n">set89</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Tab-complete to see available methods &amp; attributes!</p>
+<p>Contains modules for organization of data structures and common tasks:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt><a class="reference internal" href="data_api.html#module-roipy.data" title="roipy.data"><tt class="xref py py-mod docutils literal"><span class="pre">roipy.data</span></tt></a> </dt>
+<dd>defines the <a class="reference internal" href="data_api.html#roipy.data.Interferogram" title="roipy.data.Interferogram"><tt class="xref py py-class docutils literal"><span class="pre">Interferogram</span></tt></a> class and the <a class="reference internal" href="data_api.html#roipy.data.Set" title="roipy.data.Set"><tt class="xref py py-class docutils literal"><span class="pre">Set</span></tt></a> class. 
+These are objects with useful attributes such as an attached RSC dictionary.</dd>
+<dt><a class="reference internal" href="tools_api.html#module-roipy.tools" title="roipy.tools"><tt class="xref py py-mod docutils literal"><span class="pre">roipy.tools</span></tt></a> </dt>
+<dd>load &amp; save numpy arrays to various formats, do geocoding stuff with gdal, etc.</dd>
+<dt><a class="reference internal" href="plot_api.html#module-roipy.plot" title="roipy.plot"><tt class="xref py py-mod docutils literal"><span class="pre">roipy.plot</span></tt></a> </dt>
+<dd>convenient matplotlib plots of numpy arrays &amp; basemap maps</dd>
+<dt><a class="reference internal" href="timeseries_api.html#module-roipy.timeseries" title="roipy.timeseries"><tt class="xref py py-mod docutils literal"><span class="pre">roipy.timeseries</span></tt></a></dt>
+<dd>methods for calculating SBAS timeseries on a <a class="reference internal" href="data_api.html#roipy.data.Set" title="roipy.data.Set"><tt class="xref py py-class docutils literal"><span class="pre">Set</span></tt></a> of interferograms</dd>
+</dl>
+</div></blockquote>
+<p>test making a table</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Keyword</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Interferogram</td>
+<td>rp.data.Interferogram</td>
+</tr>
+<tr class="row-odd"><td>amp</td>
+<td>(np.array) amplitude values</td>
+</tr>
+<tr class="row-even"><td>phs</td>
+<td>(np.array) phase or deformation values</td>
+</tr>
+<tr class="row-odd"><td>transfile</td>
+<td>(str) path to .trans file for georeferencing</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="data_api.html" title="data"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="roipy API"
+             >previous</a> |</li>
+        <li><a href="../index.html">home</a>|&nbsp;</li>
+        <li><a href="../search.html">search</a>|&nbsp;</li>
+
+          <li><a href="index.html" >roipy API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, scott henderson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

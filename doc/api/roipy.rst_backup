@@ -1,0 +1,43 @@
+roipy Package
+=============
+
+:mod:`roipy` Package
+--------------------
+
+.. automodule:: roipy.__init__
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`data` Module
+------------------
+
+.. automodule:: roipy.data
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`plot` Module
+------------------
+
+.. automodule:: roipy.plot
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`timeseries` Module
+------------------------
+
+.. automodule:: roipy.timeseries
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`tools` Module
+-------------------
+
+.. automodule:: roipy.tools
+    :members:
+    :undoc-members:
+    :show-inheritance:
+

@@ -1,0 +1,426 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>plot &mdash; sampledoc 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="sampledoc 1.0 documentation" href="../index.html" />
+    <link rel="up" title="roipy API" href="index.html" />
+    <link rel="next" title="timeseries" href="timeseries_api.html" />
+    <link rel="prev" title="tools" href="tools_api.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../_static/logo.png" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="timeseries_api.html" title="timeseries"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tools_api.html" title="tools"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">home</a>|&nbsp;</li>
+        <li><a href="../search.html">search</a>|&nbsp;</li>
+
+          <li><a href="index.html" accesskey="U">roipy API</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">plot</a><ul>
+<li><a class="reference internal" href="#module-roipy.plot"><tt class="docutils literal"><span class="pre">roipy.plot</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tools_api.html"
+                        title="previous chapter">tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="timeseries_api.html"
+                        title="next chapter">timeseries</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/plot_api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="plot">
+<h1>plot<a class="headerlink" href="#plot" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-roipy.plot">
+<span id="roipy-plot-module"></span><h2><a class="reference internal" href="#module-roipy.plot" title="roipy.plot"><tt class="xref py py-mod docutils literal"><span class="pre">roipy.plot</span></tt></a> Module<a class="headerlink" href="#module-roipy.plot" title="Permalink to this headline">¶</a></h2>
+<p>useful plots to use in ipython sessions</p>
+<dl class="function">
+<dt id="roipy.plot.baseline_both">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">baseline_both</tt><big>(</big><em>Set</em><big>)</big><a class="headerlink" href="#roipy.plot.baseline_both" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort by increasing temoral baseline, after Casu et al 2008 fig2</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.baseline_perp">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">baseline_perp</tt><big>(</big><em>Set</em><big>)</big><a class="headerlink" href="#roipy.plot.baseline_perp" title="Permalink to this definition">¶</a></dt>
+<dd><p>bargraph of baselines for each interferogram in set</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.baseline_plot">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">baseline_plot</tt><big>(</big><em>Set</em><big>)</big><a class="headerlink" href="#roipy.plot.baseline_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>python version of the classic baseline plot. assumes set of
+interferograms already exists &amp; just connects the dots</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.baseline_time">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">baseline_time</tt><big>(</big><em>Set</em><big>)</big><a class="headerlink" href="#roipy.plot.baseline_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>bargraph of time separation for each ig in set</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.browse3">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">browse3</tt><big>(</big><em>tsInstance</em>, <em>prefix1='RmpMskDef'</em>, <em>prefix2='synthetic'</em>, <em>prefix3='residual'</em><big>)</big><a class="headerlink" href="#roipy.plot.browse3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot two arrays with imshow, keep the same colorbar for each, third
+array has it&#8217;s own colorbar scale (eg. for residual)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.browseRamps">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">browseRamps</tt><big>(</big><em>tsInstance</em>, <em>prefix1='MskDef'</em>, <em>prefix2='ramp'</em>, <em>prefix3='RmpMskDef'</em>, <em>signalmask='mask.npy'</em><big>)</big><a class="headerlink" href="#roipy.plot.browseRamps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show ramps removed from interferograms</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.browseSet">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">browseSet</tt><big>(</big><em>Set</em><big>)</big><a class="headerlink" href="#roipy.plot.browseSet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.browseTimeseries">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">browseTimeseries</tt><big>(</big><em>Timeseries</em>, <em>prefix=''</em><big>)</big><a class="headerlink" href="#roipy.plot.browseTimeseries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a matplotlib window with a slider to quickly browse through IGs
+IGs must be in .bin binary format output by matlab</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.calc_timeseries">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">calc_timeseries</tt><big>(</big><em>tsInstance</em>, <em>cumdef=None</em>, <em>index=None</em>, <em>showloc=False</em><big>)</big><a class="headerlink" href="#roipy.plot.calc_timeseries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract cumulative deformation values for plotting</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.caxis">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">caxis</tt><big>(</big><em>fig</em>, <em>limits=(-1</em>, <em>1)</em><big>)</big><a class="headerlink" href="#roipy.plot.caxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>change colobar limits of currently active figure</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.correlate">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">correlate</tt><big>(</big><em>pixX=None</em>, <em>pixY=None</em>, <em>rows=None</em>, <em>order=1</em><big>)</big><a class="headerlink" href="#roipy.plot.correlate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Correlate values of two coregistered 2D arrays.</p>
+<p>Make plot of dem height vs unwrapped phase, if binning specify pixel box
+size. eg =[700,1000] for the salar de atacama subregion. order=n where n is
+the order of best-fit polynomial
+&gt;&gt;&gt;InSAR.Plot.correlate(phs,hgt,rows=[700,1000],order=1)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.data_frames">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">data_frames</tt><big>(</big><em>ts</em>, <em>fwidth=17.0</em>, <em>fheight=11.0</em>, <em>nrow=4</em>, <em>normalize=True</em>, <em>show=True</em>, <em>outname='proofsheet.pdf'</em>, <em>cbar='each'</em>, <em>prefix='RmpMskDef'</em>, <em>ylabeldate=False</em><big>)</big><a class="headerlink" href="#roipy.plot.data_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a &#8216;proof sheet&#8217; of all frames in time series default 17x11 paper
+format. cbar can be &#8216;single&#8217; (normalized to min/max of set?)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.date_igrams">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">date_igrams</tt><big>(</big><em>ts</em>, <em>date</em>, <em>nrow=1</em>, <em>prefix='RmpMskDef'</em>, <em>cbar='each'</em>, <em>normalize=True</em>, <em>ylabeldate=True</em>, <em>fwidth=17.0</em>, <em>fheight=11.0</em>, <em>mask=False</em><big>)</big><a class="headerlink" href="#roipy.plot.date_igrams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot all igrams containing the specified date</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.date_map">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">date_map</tt><big>(</big><em>tsInstance</em>, <em>prefix='RmpMskDef'</em><big>)</big><a class="headerlink" href="#roipy.plot.date_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map number of dates in timeseries inversion of each pixel</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.date_variance">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">date_variance</tt><big>(</big><em>tsInstance</em>, <em>signalmask=None</em>, <em>prefix='RmpMskDef'</em><big>)</big><a class="headerlink" href="#roipy.plot.date_variance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the average variance and standard deviation of all interferograms
+with a common date</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.geo_correlate">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">geo_correlate</tt><big>(</big><em>arrayX</em>, <em>arrayY</em>, <em>order=1</em><big>)</big><a class="headerlink" href="#roipy.plot.geo_correlate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pass cropped arrays on same grid from gmtsample() output. Arrays
+should have already been converted from LOS to Vertical</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.get_distance">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">get_distance</tt><big>(</big><em>point1</em>, <em>point2</em>, <em>transObject</em><big>)</big><a class="headerlink" href="#roipy.plot.get_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance between two points in km</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.hist">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">hist</tt><big>(</big><em>data</em>, <em>signalmask=None</em>, <em>nbins=50</em><big>)</big><a class="headerlink" href="#roipy.plot.hist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot histogram of interferogram</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.ig_map">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">ig_map</tt><big>(</big><em>tsInstance</em>, <em>prefix='RmpMskDef'</em>, <em>platform=None</em><big>)</big><a class="headerlink" href="#roipy.plot.ig_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map number of interferograms coherent per pixel</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.make_profile">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">make_profile</tt><big>(</big><em>path, rasters=['stack282', 'dem_t282'], unit='degrees'</em><big>)</big><a class="headerlink" href="#roipy.plot.make_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Need Path to ESRI format shape file output by ProfileFromLine in QGIS
+plot is a list of shapefile attribute raster values to put into profile
+assume profile distance measured in degrees &amp; therefore approximate distance
+in meters</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.pcolor">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">pcolor</tt><big>(</big><em>array</em>, <em>title=None</em><big>)</big><a class="headerlink" href="#roipy.plot.pcolor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.pcolor_ma">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">pcolor_ma</tt><big>(</big><em>dataFile</em>, <em>maskFile=None</em><big>)</big><a class="headerlink" href="#roipy.plot.pcolor_ma" title="Permalink to this definition">¶</a></dt>
+<dd><p>load separate data and mask and plot</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.pig">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">pig</tt><big>(</big><em>Interferogram</em>, <em>array=2</em><big>)</big><a class="headerlink" href="#roipy.plot.pig" title="Permalink to this definition">¶</a></dt>
+<dd><p>bring up a pseudocolor image of any array associated with an interferogram
+poosible= phs,amp,look,head,cor. Array=nparray,1,2</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.profile">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">profile</tt><big>(</big><em>array</em>, <em>val</em>, <em>ax='x'</em><big>)</big><a class="headerlink" href="#roipy.plot.profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a simple profile along a row or column of array in radar coordinates</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.profile_VH">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">profile_VH</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#roipy.plot.profile_VH" title="Permalink to this definition">¶</a></dt>
+<dd><p>averaged row &amp; column profiles in radar coordinates</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.profile_asterix">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">profile_asterix</tt><big>(</big><em>data</em>, <em>center=(311</em>, <em>68)</em>, <em>nprofiles=5</em>, <em>yex=(-0.5</em>, <em>1)</em><big>)</big><a class="headerlink" href="#roipy.plot.profile_asterix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw series of profiles through center point. Default center for t6089
+x is column number, y is row #</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.profile_average">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">profile_average</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#roipy.plot.profile_average" title="Permalink to this definition">¶</a></dt>
+<dd><p>Don&#8217;t show profiles next to array</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.profile_collapsed">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">profile_collapsed</tt><big>(</big><em>data</em>, <em>center</em>, <em>yex=(-0.5</em>, <em>1.0)</em>, <em>nbins=100</em>, <em>markevery=10</em><big>)</big><a class="headerlink" href="#roipy.plot.profile_collapsed" title="Permalink to this definition">¶</a></dt>
+<dd><p>collapsed profile from arbitrary center point in array in radar coordinates</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.project2utm">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">project2utm</tt><big>(</big><em>Point</em>, <em>epsg=32719</em>, <em>printout=True</em><big>)</big><a class="headerlink" href="#roipy.plot.project2utm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform point object in lat/lon to UTM 192 WGS84 (epsg=32719)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.showmap">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">showmap</tt><big>(</big><em>path</em>, <em>dims=None</em><big>)</big><a class="headerlink" href="#roipy.plot.showmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use Basemap module to plot a georeferenced interferogram</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.side_by_side">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">side_by_side</tt><big>(</big><em>array1</em>, <em>array2</em>, <em>array3</em>, <em>fixCaxis=True</em><big>)</big><a class="headerlink" href="#roipy.plot.side_by_side" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot two arrays with imshow, keep the same colorbar for each, third
+array has it&#8217;s own colorbar scale (eg. for residual)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.side_by_side_new">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">side_by_side_new</tt><big>(</big><em>array1</em>, <em>array2</em>, <em>array3</em><big>)</big><a class="headerlink" href="#roipy.plot.side_by_side_new" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.simple_stack">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">simple_stack</tt><big>(</big><em>tsInstance</em>, <em>prefix='Def'</em>, <em>signalmask='mask.npy'</em>, <em>clim='auto'</em><big>)</big><a class="headerlink" href="#roipy.plot.simple_stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do a simple stack of a directory of rect_unw interferograms with associated
+msk files used to crop noisy pixels. Date range is a tuple of beginning
+and end dates, to stack only the interferograms that fall in the given
+time span</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.subset_map">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">subset_map</tt><big>(</big><em>tsInstance</em>, <em>file='pix2subsets_svd.mat'</em><big>)</big><a class="headerlink" href="#roipy.plot.subset_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map rank of B matrix for each pixel. Number of subsets given by:
+L = (N+1) - Rank(A) where N is the number of dates in inversion</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.summary">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">summary</tt><big>(</big><em>tsInstance</em>, <em>signalmask=None</em>, <em>prefix='RmpMskDef'</em><big>)</big><a class="headerlink" href="#roipy.plot.summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>mean phase w/ standard deviation for rmp removed &amp; filtered
+signal box is for t6089</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.summary2">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">summary2</tt><big>(</big><em>tsInstance</em>, <em>signalmask=None</em>, <em>prefix='RmpMskDef'</em><big>)</big><a class="headerlink" href="#roipy.plot.summary2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Just Plot Standar Deviations to remove colorbars</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.synthetic_frames_asc">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">synthetic_frames_asc</tt><big>(</big><em>ts</em>, <em>fwidth=11.0</em>, <em>fheight=8.0</em>, <em>nrow=2</em>, <em>normalize=True</em>, <em>show=True</em><big>)</big><a class="headerlink" href="#roipy.plot.synthetic_frames_asc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a &#8216;proof sheet&#8217; of all frames in time series</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.timeseries">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">timeseries</tt><big>(</big><em>tsInstance</em>, <em>cumdef=None</em>, <em>index=('row'</em>, <em>'col')</em>, <em>order=1</em>, <em>title=None</em>, <em>save=False</em>, <em>style='default'</em>, <em>biannual=False</em>, <em>showloc=False</em><big>)</big><a class="headerlink" href="#roipy.plot.timeseries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the timeseries for a specified pixel default is uturuncu t10
+data is the pix2cumdef array</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.timeseries_separate">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">timeseries_separate</tt><big>(</big><em>tsInstance</em>, <em>data=None</em>, <em>index=(1515</em>, <em>135)</em>, <em>order=1</em><big>)</big><a class="headerlink" href="#roipy.plot.timeseries_separate" title="Permalink to this definition">¶</a></dt>
+<dd><p>ERS dates plotted as green triangles, ENVISAT dates plotted as blue circles</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.timespans">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">timespans</tt><big>(</big><em>tsInstance</em><big>)</big><a class="headerlink" href="#roipy.plot.timespans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a plot showing the timespans of all interferograms in a set</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.timespans_dq">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">timespans_dq</tt><big>(</big><big>)</big><a class="headerlink" href="#roipy.plot.timespans_dq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Color points in timespan plot based on data quality</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.vmap_stack">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">vmap_stack</tt><big>(</big><em>tsInstance</em>, <em>prefix='RmpMskDef'</em>, <em>clim='auto'</em><big>)</big><a class="headerlink" href="#roipy.plot.vmap_stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to stack_binary in matlab</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.vmap_timeseries">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">vmap_timeseries</tt><big>(</big><em>tsInstance</em>, <em>result='pix2avevel_svd.mat'</em>, <em>clim='auto'</em><big>)</big><a class="headerlink" href="#roipy.plot.vmap_timeseries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read pix2avevel.mat from matlab routines</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roipy.plot.vmap_timeseries_new">
+<tt class="descclassname">roipy.plot.</tt><tt class="descname">vmap_timeseries_new</tt><big>(</big><em>tsInstance</em>, <em>cumdef=None</em>, <em>clim='auto'</em><big>)</big><a class="headerlink" href="#roipy.plot.vmap_timeseries_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use pix2cumdef.mat array from matlab routines</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="timeseries_api.html" title="timeseries"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tools_api.html" title="tools"
+             >previous</a> |</li>
+        <li><a href="../index.html">home</a>|&nbsp;</li>
+        <li><a href="../search.html">search</a>|&nbsp;</li>
+
+          <li><a href="index.html" >roipy API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, scott henderson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
