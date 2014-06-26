@@ -606,7 +606,7 @@ def save_image(Interferogram, outname=None, data=None, vmin=None, vmax=None,
         data[data==nodata] = np.nan
     
     # Array elements=image pixels, transparent pixels are np.NaNs
-    plt.imsave(outname, data, vmin=vmin, vmax=vmax, cmap=plt.cm.jet, format=format)
+    plt.imsave(outname, data, vmin=vmin, vmax=vmax, cmap=cmap, format=format)
     
     if worldfile:
         # [dx,dy,rotx?,roty?,xUL,yUL]
@@ -1383,6 +1383,21 @@ Continued on next page...\\
     if runTeX:
         os.system('latex {}'.format(texFile))
         os.system('dvipdf {}'.format(texFile.replace('tex','dvi')))
+
+
+def get_stats(Interferogram, histogram=False):
+	self = Interferogram
+	self.amp_stats = {}
+	self.phs_stats = {}
+	amp,phs = load_bil(Interferogram)
+	
+	for d,data in zip([self.amp_stats, self.phs_stats],[amp,phs]):
+		d['min'] = np.nanmin(data)
+		d['max'] = np.nanmax(data)
+		d['mean'] = np.nanmean(data)
+		d['std'] = np.nanstd(data)
+		d['var'] = np.nanvar(data)
+		print d
 
 
 def export_latex_table(Set, baseline_list='list.out', outdir='.', runTeX=False):

@@ -80,27 +80,29 @@ def pig(Interferogram, array=2, title='', units='radar', cunits='phase', ax=None
     return cb
 
 
-def pcolor(array, title='', ig=None, units='pixels', ax=None):
-    """ display a colormap of an interferogram. If units='km', use RANGE_PIXEL_SIZE
+def pcolor(array, title='', ig=None, units='pixels', cmap='jet', ax=None):
+	""" display a colormap of an interferogram. If units='km', use RANGE_PIXEL_SIZE
     and AZIMUTH_PIXEL_SIZE in the .rsc to scale the display"""
-    #print title, units, ax
+	#print title, units, ax
+	if ax==None:
+		fig = plt.figure()
+
+	#http://matplotlib.org/examples/color/colormaps_reference.html
+	# for insar, best use RdBu_r, bwr, seismic (each differ just in terms of extreme saturation val 
+	im = plt.imshow(array, cmap=plt.get_cmap(cmap)) 
+	cb = plt.colorbar()
+	if title:
+		plt.title(title)
+	if units == 'km':
+		maxx = ig.Width * ig.col2km
+		maxy = ig.Length * ig.row2km
+		im.set_extent((0,maxx,0,maxy))
     
-    if ax==None:
-        fig = plt.figure()
-    im = plt.imshow(array,cmap=plt.cm.jet)
-    cb = plt.colorbar()
-    if title:
-        plt.title(title)
-    if units == 'km':
-        maxx = ig.Width * ig.col2km
-        maxy = ig.Length * ig.row2km
-        im.set_extent((0,maxx,0,maxy))
-    
-    plt.xlabel('range ({})'.format(units))
-    plt.ylabel('azimuth ({})'.format(units))
-    plt.title(title)
+	plt.xlabel('range ({})'.format(units))
+	plt.ylabel('azimuth ({})'.format(units))
+	plt.title(title)
     #cb.set_label('dLOS (cm)') #not necessarily... can also plot dems etc
-    plt.show()  
+	plt.show()  
 
 
 
