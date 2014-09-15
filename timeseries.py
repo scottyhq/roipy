@@ -1,5 +1,5 @@
 """
-SBAS timeseries code in python
+SBAS-like timeseries code in python
 """
 
 import os
@@ -8,7 +8,7 @@ import numpy as np
 import numpy.ma as ma
 import matplotlib.pyplot as plt #For convenience plots NOTE: change to call
 import matplotlib.dates as pltdate
-import roipy.tools #NOTE: should keep this separate
+import roipy.tools #NOTE: should keep this separate?
 import shutil
 
 # Time series settings dictionary
@@ -28,8 +28,8 @@ class Timeseries():
         #NOTE: change based on machine...
         #self.ScriptDir = '/Users/scotthenderson/dev/matlab/timeseries'
         self.ScriptDir = '/home/scott/myscripts/matlab/timeseries'
-        self.ProcDir = os.path.join(self.RunDir, 'clean_stack')
-        self.OutDir = os.path.join(self.RunDir, 'output')
+        #self.ProcDir = os.path.join(self.RunDir, 'clean_stack') # keep same as procdir
+        self.OutDir = os.path.join(self.RunDir, 'output') 
         self.AuxDir = os.path.join(self.ParentDir, 'aux_files')
         #NOTE: if separate mask files are needed make additional aux_files folder
         #append to prefix w/ each processing step,
@@ -65,7 +65,7 @@ Width: {Width}
 
     def save_settings(self, outfile='settings.p'):
         """Save timeseries settings to input file"""
-        #NOTE: drawback, must edited w/n ipython
+        #NOTE: drawback, must edited w/n ipython, best to save settings in plain ascii text format 
         settings = {'DataDir':self.DataDir,
                     'ProcDir':self.ProcDir,
                     'OutDir':self.OutDir,
@@ -89,7 +89,83 @@ Width: {Width}
         """Load previous settings from pickled dictionary"""
         settings = pickle.load(open(path,'rb'))
         self.__dict__.update(settings)
+    
+    
+    def convert_data(self):
+        """
+        Extract phs arrays from raw data into rect.npy binary with copy of rsc
         
+        Alternative: repace 'mag' array with 'msk' and continue using load_bil, save_bil formats
+        """
+        print 'Saving data for post-processing in: {}'.format(self.RunDir)
+        
+        for ig in self.Set:
+            print ig.Name
+            # Phase Array - Convert to CM
+            phs = roipy.tools.load_half(ig)
+            data = phs * ig.Phs2cm
+            outname = os.path.join(self.RunDir, 'd_' + ig.Name.replace('unw','npy')) #d for displacement
+            ig.ProcName = outname
+            np.save(outname,data)
+            
+            # Copy rsc
+            shutil.copyfile(ig.Path + '.rsc', outname + '.rsc')
+            
+            # Nan Values as mask array
+            maskname = outname.replace('d_', 'nans_')
+            nans = np.isnan(data) # NOTE: ROI_PAC saves nans as exact 0.0, risks scraping some true data
+            np.save(maskname, nans)
+    
+    
+    def stack(Timeseries, remove_ramp='linear', signalmask='mask.npy'):
+        """
+        Do a simple stack of a directory of rect_unw interferograms with associated
+        msk files used to crop noisy pixels. Date range is a tuple of beginning
+        and end dates, to stack only the interferograms that fall in the given
+        time span
+        
+        remove_ramp = 'dc', 'linear', 'quadratic'
+        
+        # Change procname=rd_ remove_ramp=False
+
+        NOTE: careful with saving path names, also, may not want to save if file sizes are large?
+        """
+
+        self = Timeseries
+        datatype = np.dtype('<f4')
+        width = self.Set.Width
+        length = self.Set.Length
+        
+        cumTime = np.zeros((length,width), dtype=datatype)
+        cumDef = np.zeros((length,width), dtype=datatype)
+        
+        if signalmask:    
+            signal = np.load(signalmask)
+    
+        for ig in self.Set:
+            data = np.load(ig.ProcName)
+            indGood = -np.isnan(data) # Assumes no special mask (e.g. coherence etc.)
+            
+            if remove_ramp != None:
+                ramp = roipy.tools.calc_ramp(data, 'linear', custom_mask=signal)
+                # Save a copy
+                outdata = ig.ProcName.replace('d_', 'ramp_')
+                if not os.path.exists(outdata):
+                    np.save(outdata, ramp.data) #mask array
+            
+            data_r = data-ramp
+            outname = ig.ProcName.replace('d_', 'rd_')
+            if not os.path.exists(outname):
+                np.save(outname, data_r.data) #mask array
+            
+            cumTime[indGood] += float(ig.Timespan) #uplift positive
+            cumDef[indGood] += data_r[indGood]
+        
+        #stack = stack * (5.62/4*np.pi) #done already in load_interferograms_binary
+        stack = cumDef / cumTime
+        
+        return stack, cumDef, cumTime
+    
         
     def prep_synthetic_test(self, outdir='synthetic_test',
                             loc=(300,350,50,100), #t89
@@ -279,7 +355,8 @@ Width: {Width}
                 #B[i,j] = 
                 print 'd'
 
-
+    # NOTE: moved to roi_py tools
+    '''
     def remove_ramp(self, ramp='quadratic', addmask=False):
         """ Remove a quadratic surface from the interferogram (e.g. residual
         ramps left over after re-estimating baselines in ROI_PAC). Subtracting
@@ -335,7 +412,7 @@ Width: {Width}
 
             self.save_ma(ig, igram)
         print 'Done'
-        
+    '''
 
     def invert_L2_wdls():
         """ perform time series inversion with weighted damped least squares"""

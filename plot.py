@@ -317,25 +317,26 @@ def geo_correlate(arrayX, arrayY, order=1):
 def side_by_side_old(array1, array2, array3, fixCaxis=True):
     """ DEPRECATED Plot two arrays with imshow, keep the same colorbar for each, third
     array has it's own colorbar scale (eg. for residual)"""
+    origin = 'upper'
     fig = plt.figure()
     ax1 = fig.add_subplot(131)
     ax1.set_title('Rmp')
-    im1 = ax1.imshow(array1,origin='lower',cmap=plt.cm.jet)
+    im1 = ax1.imshow(array1,origin=origin,cmap=plt.cm.jet)
     fig.colorbar(im1)
 
     ax2 = fig.add_subplot(132)
     ax2.set_title('Synthetic')
-    im2 = ax2.imshow(array2,origin='lower',cmap=plt.cm.jet)
-    # Set the same colorscale bounds as im1
-    norm = mpl.colors.Normalize(vmin=array1[np.isfinite(array1)].min(),
-                                vmax=array1[np.isfinite(array1)].max())
+    im2 = ax2.imshow(array2,origin=origin,cmap=plt.cm.jet)
+
     if fixCaxis:
-        im2.set_norm(norm) 
+	# Set the same colorscale bounds as im1
+	norm = mpl.colors.Normalize(vmin=np.nanmax(array1), vmax=np.nanmax(array1))
+	im2.set_norm(norm) 
     fig.colorbar(im2)
 
     ax3 = fig.add_subplot(133)
     ax3.set_title('Residual')
-    im3 = ax3.imshow(array3,origin='lower',cmap=plt.cm.jet)
+    im3 = ax3.imshow(array3,origin=origin,cmap=plt.cm.jet)
     fig.colorbar(im3)
     
     plt.draw()
@@ -1427,34 +1428,9 @@ def profile_collapsed(data, center, yex=(-0.5,1.0), nbins=100, markevery=10, ax=
     plt.legend()
     
 
-def simple_stack(Timeseries, prefix='Def', signalmask='mask.npy', clim='auto'):
-    """Do a simple stack of a directory of rect_unw interferograms with associated
-    msk files used to crop noisy pixels. Date range is a tuple of beginning
-    and end dates, to stack only the interferograms that fall in the given
-    time span"""
+def plot_stack(Timeseries, stack, cumDef, cumTime):
+    """ Plot output of timeseries stacking """
     self = Timeseries
-    datatype = np.dtype('<f4')
-    width = self.Set.Width
-    length = self.Set.Length
-    
-    cumTime = np.zeros((length,width),dtype=datatype)
-    cumDef = np.zeros((length,width),dtype=datatype)
-    if signalmask:    
-        signal = np.load(signalmask)
-
-    for ig in self.Set:
-        data = tools.load_binary_old(self, ig, prefix=prefix)
-        indGood = np.isfinite(data)
-        bg = np.ma.masked_array(data, np.isnan(data))
-        bg[signal] = ma.masked
-        mean = np.mean(bg)
-        print mean
-        data = data - mean
-        cumTime[indGood] += float(ig.Timespan) #uplift positive
-        cumDef[indGood] += data[indGood]
-    
-    #stack = stack * (5.62/4*np.pi) #done already in load_interferograms_binary
-    stack = cumDef / cumTime
     
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -1463,8 +1439,7 @@ def simple_stack(Timeseries, prefix='Def', signalmask='mask.npy', clim='auto'):
     cb.set_label('cm / {0:.2f}yr'.format(self.Set.Timespan))
     plt.title('simple stack')
     
-    #Plot with cumulative deformation & data coverage
-    '''
+    # Subplots --> cumulative deformation, cumulative time, average rate
     fig = plt.figure(figsize=(17,11))
     titlestr = '{0} Stack   {1} Interferograms   {2} : {3} '.format(self.Set.Track,
                                                                self.Set.Nig,
@@ -1488,13 +1463,37 @@ def simple_stack(Timeseries, prefix='Def', signalmask='mask.npy', clim='auto'):
     cb = plt.colorbar()
     cb.set_label('cm / {0:.2f}yr'.format(self.Set.Timespan))
     plt.title('average velocity')
-    '''
     
-    return stack
+    plt.show()
+
+
+def plot_bil(Interferogram, cmap=plt.cm.bwr):
+    """ Plot output of timeseries stacking """
+    ar1, ar2 = roipy.tools.load_bil(Interferogram)
+    
+    # Subplots --> cumulative deformation, cumulative time, average rate
+    fig = plt.figure(figsize=(11,8.5))
+    
+    plt.suptitle(Interferogram.Name, fontweight='bold', fontsize=12)
+    ax = fig.add_subplot(121)
+    im = plt.imshow(ar1,cmap=plt.cm.bwr)
+    cb = plt.colorbar()
+    #cb.set_label('cm')
+    plt.title('Array 1')
+    
+    ax = fig.add_subplot(122)
+    im = plt.imshow(ar2,cmap=plt.cm.bwr)
+    cb = plt.colorbar()
+    #cb.set_label('years')
+    plt.title('Array 2')
+    
+    plt.show()
 
 
 def stack(Timeseries, prefix='RmpMskDef', clim='auto', timeWeight=True, **kwargs): #, units='pixels' ax=None):
     """ Make a stack (cumulative deformation)/(cumulative time) """
+    # NOTE: moved to timeseries method
+    '''
     self = Timeseries
     datatype = np.dtype('<f4')
     width = self.Set.Width
@@ -1514,14 +1513,14 @@ def stack(Timeseries, prefix='RmpMskDef', clim='auto', timeWeight=True, **kwargs
         plt.clim(clim)
     #NOTE: do data extraction under rp.tools....!
     return stack
-
+    '''
 
 def timespans_dq():
     """ Color points in timespan plot based on data quality"""
     #date point gets colored value based on average standard deviation of scenes
     #using that date. NOTE: Mask out regions of know signal or else large timespan
     #scenes show high variance.
-    
+    print 'Not Implemented'
     
 def date_variance(Timeseries, signalmask=None, prefix='RmpMskDef', ax=None):
     """ Calculate the average variance and standard deviation of all interferograms

@@ -64,11 +64,19 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
                           cor='float32',
                           hgt='float32',
                           msk='float32',
+                          rmg='float32',
+                          r4='float32',
                           dem='int16',
+                          amp='complex64',
                           int='complex64',
                           slc='complex64')
-        self.DataType = roi_dtypes[self.Path[-3:]]
+        suffix = self.Path[-3:]
+        if suffix in roi_dtypes:
+            self.DataType = roi_dtypes[suffix]
+        else:
+            self.DataType = 'Unknown'
         self.Rsc['DATA_TYPE'] = self.DataType
+
 
     def setup(self):
         #self.associate_files() # Not really useful?
@@ -312,11 +320,11 @@ class Set():
     """    
     
     
-    def __init__(self, input, prefix='rect'):
+    def __init__(self, input, pattern='rect*unw'):
         """ input can either be a path or list of file strings"""
         if type(input) is str:
             self.DataDir    = input.rstrip(os.path.sep) #no trailing slash
-            self.Igrams     = self.load_directory(prefix=prefix)
+            self.Igrams     = self.load_directory(pattern=pattern)
         else:
             self.DataDir = os.path.dirname(os.path.abspath(input[0]))
             #print self.DataDir
@@ -393,7 +401,7 @@ Width: {Width}
             self.Orbit = 'undefined'
         
 
-    def load_directory(self, prefix='rect_'):
+    def load_directory(self, pattern):
         """Create a dictionary of Interferogram.General() instances from all rect*unw
         files in the specificed path
         
@@ -401,12 +409,13 @@ Width: {Width}
         -----
         igrams = Interferogram.load_set(os.getcwd())"""
         igrams = {} 
-        paths = glob.glob(os.path.join(self.DataDir,'{0}*.unw'.format(prefix)))
+        paths = glob.glob(os.path.join(self.DataDir, pattern))
         for path in paths:
             ig = Interferogram(path)
             igrams[ig.Rsc['PAIR']] = ig
 
         return igrams
+
 
     def load_paths(self, paths):
         """Instead of globbing directory, load only specified files"""

@@ -280,11 +280,7 @@ def mctigue():
     plt.show()
     
     
-def yang():
-    """
-    TODO
-    """
-    print 'work in progress'
+
     
     
 def okada():
@@ -379,7 +375,7 @@ def mctigue_profiles(dz1,dr1,dz2,dr2, x, depth=3e3):
     plt.xlabel('normalized distance (r/d)')
     plt.ylabel('normalized displacement (u*(p*d/mu))')
     plt.show()
-    
+
 
 
 

@@ -113,7 +113,7 @@ def make_synthetic(Geogram, center=(-67.22,-22.27), source='mogi', source_params
 def dem_phase_set(Set, hgtPath = '/home/scott/data/insar/t6089/aux_files/radar_32rlks.hgt'):
     """ """
     rsq = np.zeros(Set.Nig)
-    hgt = roi_py.data.Interferogram(hgtPath)
+    hgt = roipy.data.Interferogram(hgtPath)
     elev = load_half(hgt, half=2)
     for i,ig in enumerate(Set):
         #unw = roi_py.data.Interferogram(unwPath)
@@ -134,11 +134,25 @@ def dem_phase_set(Set, hgtPath = '/home/scott/data/insar/t6089/aux_files/radar_3
     plt.title('DEM vs Phase fits')
     
 
+def load_roifile(Interferogram):
+    """ Call appropriate load() function based on file suffix """
+    self = Interferogram
+    ext = os.path.splitext(self.Name)[1] 
+    if ext in ['rmg','unw','cor','hgt','msk']:
+        data = load_bil(self)
+    elif ext in ['slc', 'int', 'amp']:
+        data = load_cpx(self)
+    elif ext in ['dem']:
+        data = load_binary(self.Path,dtype='int16')
+    else: # assume single array r4 format
+        data = load_r4(self.Path) # assume single array r4
+    return data
+
 
 def load_r4(path, length=None, width=None):
     """ Load a ROI_PAC r4 format file """
     data = np.fromfile(path, dtype='f4')
-    data = np.flipud(data.reshape((length,width)))
+    data = np.flipud(data.reshape((length,width))) # N-up, W-left orientation
     return data
 
 
@@ -622,7 +636,7 @@ def save_gdal(Interferogram=None, nparray=None, outfile=None, geotrans=None, pro
     """ Write numpy array to any raster format supported by GDAL.
     
     Inputs
-    Interferogram = roi_py.data.Interferogram instance
+    Interferogram = roipy.data.Interferogram instance
     nparray = np.array associated with Interferogram
     outfile = str output name
     geotrans = tuple of (upper left x, w-e pixel res, rotation, top left y, rotation, n-s pixel resolution)
@@ -891,21 +905,21 @@ def load_overlay(path, convert2cm=False):
 
 def calc_ramp(array, ramp='quadratic', custom_mask=None):
     """
-    Remove a quadratic surface from the interferogram (e.g. residual
-        ramps left over after re-estimating baselines in ROI_PAC). Subtracting
-        the best-fit quadratic surface forces the mean surface displacement to
-        be zero (equal amount of positive & negative deformation within the
-        scene). Therefore it is CRITICAL to exclude known signal and unwrapping
-        errors before running this function!
+    Remove a quadratic surface from the interferogram Subtracting
+    the best-fit quadratic surface forces the background mean surface
+    displacement to be zero
+    
+    Note: exclude known signal, unwrapping errors, etc. with custom_mask
+    
+    ramp = 'dc','linear','quadratic'
+    
+    returns ramp
     """
-    #self = Interferogram
-    #X,Y = np.indices(self.shape)
     X,Y = np.indices(array.shape) 
     x = X.reshape((-1,1))
     y = Y.reshape((-1,1))
     
-    #phs = load_half(self)
-    #phs = ma.masked_invalid(phs)
+    # Work with numpy mask array
     phs = ma.masked_invalid(array)
     
     if custom_mask != None:
@@ -916,26 +930,31 @@ def calc_ramp(array, ramp='quadratic', custom_mask=None):
     dgood = d[g].reshape((-1,1))
 
     if ramp == 'quadratic':
-        print 'fitting quadtratic surface'
+        print 'fit quadtratic surface'
         G = np.concatenate([x, y, x*y, x**2, y**2, np.ones_like(x)], axis=1) #all pixels        
         Ggood = np.vstack([x[g], y[g], x[g]*y[g], x[g]**2, y[g]**2, np.ones_like(x[g])]).T
-        m,resid,rank,s = np.linalg.lstsq(Ggood,dgood)
+        try:
+            m,resid,rank,s = np.linalg.lstsq(Ggood,dgood)
+        except ValueError as ex:
+            print '{}: Unable to fit ramp with np.linalg.lstsq'.format(ex)
+            
             
     elif ramp == 'linear':
-        print 'fitting linear surface'
+        print 'fit linear surface'
         G = np.concatenate([x, y, x*y, np.ones_like(x)], axis=1)
         Ggood = np.vstack([x[g], y[g], x[g]*y[g], np.ones_like(x[g])]).T  
-        m,resid,rank,s = np.linalg.lstsq(Ggood,dgood)
+        try:
+            m,resid,rank,s = np.linalg.lstsq(Ggood,dgood)
+        except ValueError as ex:
+            print '{}: Unable to fit ramp with np.linalg.lstsq'.format(ex)
     
     elif ramp == 'dc':
         G = np.ones_like(phs)
         m = np.mean(phs)
-        print 'fitting dc offset'
+        print 'fit dc offset'
     
     ramp = np.dot(G,m)
-    #ramp = ma.array(ramp,mask=phs.mask) #retains custom masked areas, need to copy original data array & use that mask
     ramp = ramp.reshape(phs.shape)
-    #ramp = ramp.reshape(self.Shape)
     
     return ramp
 
@@ -1254,8 +1273,11 @@ def calc_statistics(Set, signalmask=None):
         ig.Stats['var'] = ig.Stats['std']**2
 
 
-def geotrans2grid(geotrans,nx,ny):
-    """ given a geotrans tuple, number of rows and columns, return meshgrid"""
+def geotrans2grid(geotrans,data):
+    """ Return X, Y meshgrids for 2D modeling """
+    nx = data.shape[1]
+    ny = data.shape[0]
+    
     ullon = geotrans[0]
     dlon = geotrans[1]
     ullat = geotrans[3]
@@ -1272,7 +1294,9 @@ def get_grid(geo, center=True):
     """Return meshgrid of lat lon corresponding to unw
     Coordinates are center points by default, otherwise lower left corner of pixels
     Input = Geogram object
-    NOTE: may not work for northern hemisphere igs """
+    NOTE: may not work for northern hemisphere igs
+    NOTE: modelling better suited for UTM grid
+    """
     xmin = float(geo.Rsc['X_FIRST'])
     nx = int(geo.Rsc['WIDTH'])
     xmax = xmin + (nx * float(geo.Rsc['X_STEP']))
@@ -1791,18 +1815,25 @@ def lookdown(path, nlooks=2):
     return outname
 
 
-def cart2los(self,dEW=None,dNS=None,dZ=None,look=None,heading=None):
+def get_cart2los(geoincidenceFile):
     """ Convert cartesian arrays into line-of-sight """
-    #NOTE: careful of sign change for ascending & descending tracks!
-    look = look * (np.pi / 180) # Convert to radians
-    heading = heading * (np.pi / 180)
+    # NOTE: careful of sign changes for ascending & descending tracks!
+    # NOTE: assumes standarard WGS84lat/lon format of file
+    geo = roipy.data.Geogram(geoincidenceFile)
+    look,head = load_bil(geo)
+    
+    look = np.deg2rad(look)
+    head = np.deg2rad(head)
 
-    EW2los = np.sin(heading)*np.sin(look)
-    NS2los = np.cos(heading)*np.sin(look) 
+    # Convention is negative --> reduction in line of sight, therefore uplift
+    EW2los = np.sin(head) * np.sin(look)
+    NS2los = np.cos(head) * np.sin(look) 
     Z2los = -np.cos(look)
-    los = (dEW * EW2los) + (dNS * NS2los) + (dZ * Z2los) 
+    
+    # Change convention to uplift --> positive
+    cart2los = -np.dstack([EW2los, NS2los, Z2los])
 
-    return los
+    return cart2los
 
 
 def match_date(Set, date):
