@@ -20,7 +20,7 @@ import re
 try:
     import h5py
 except:
-    print "install 'h5py' python module for reading matlab .mat files"
+    print("install 'h5py' python module for reading matlab .mat files")
 
 import scipy.stats
 
@@ -41,12 +41,12 @@ def load_grd(path):
     """ scipy to load GMT file (really netCDF type... or build gdal with netcdf.."""
     grdFile = netcdf(path,'r')
     try: #method if output by GDAL
-        print 'trying method 1...'
+        print('trying method 1...')
         shape = grdFile.variables['dimension'][::-1]
         data = grdFile.variables['z'][::-1]
         data = np.reshape(data,shape) #NOTE:order='F' b/c from matlab
     except:
-        print 'using method 2...'
+        print('using method 2...')
         #NOTE: byte reading is off here...
         shape = (grdFile.dimensions['y'], grdFile.dimensions['x'])
         data = grdFile.variables['z'][::-1]
@@ -251,10 +251,10 @@ def load_mat(path, length=None, width=None):
     
     #Latest version of matlab
     try:
-        print path
+        print(path)
         f = h5py.File(path)
-        data = f.values()[0]
-        print 'loading with h5py'
+        data = list(f.values())[0]
+        print('loading with h5py')
         
         # Sparse Matrix
         if isinstance(data, h5py.highlevel.Group):
@@ -266,7 +266,7 @@ def load_mat(path, length=None, width=None):
             data = np.array(sparseData.todense())
             data = np.ascontiguousarray(data) #Not sure this does anything
             if length and width:
-                print length, width
+                print(length, width)
                 data = data.reshape((length,width),order='F')
         # Full Matrix:
         else:
@@ -274,14 +274,14 @@ def load_mat(path, length=None, width=None):
             data = np.ascontiguousarray(data)
             #NOTE: careful if reorienting done in some other commands... 
             if length and width:
-                print length,width
+                print(length,width)
                 data = np.fliplr(data.reshape((length, width),order='F'))
         f.close()
     
     # Older versions of matlab
     except:
         raise
-        print 'loading with scipy.io.loadmat'
+        print('loading with scipy.io.loadmat')
         dict = loadmat(path)
         data = dict.popitem()[1]
         data = data.T #transpose to match orientation from h5py
@@ -378,7 +378,7 @@ def load_half(Interferogram, half=2, path=None, dtype='f4', convert2cm=False):
         path = self.Path
     data = np.zeros(self.Shape, dtype=dtype)
     with open(path,'rb') as f:
-        rows = range(self.Length + 1 - half)
+        rows = list(range(self.Length + 1 - half))
         if half == 2:
             #NOTE: if fromfile has a 'skip' argument, could go easier...
             junk = np.fromfile(f, dtype=dtype, count=self.Width)
@@ -460,11 +460,11 @@ def load_gdal(inFile, data=True, geotrans=True, proj=True):
         else:
             data = None
         
-        print 'Sucessfully read in file:\n{0}'.format(inFile)
+        print('Sucessfully read in file:\n{0}'.format(inFile))
         return data, geotrans, proj
 
     except:
-        print 'Unable to import {0} with GDAL!'.format(inFile)
+        print('Unable to import {0} with GDAL!'.format(inFile))
         raise
 
 
@@ -496,7 +496,7 @@ def save_rsc(RscDict, filename):
     
     #NOTE: figure out how to get nice column alignment
     with open(filename, 'w') as rsc:
-        for item in RscDict.items():
+        for item in list(RscDict.items()):
             rsc.write("{0}           {1}\n".format(*item))
         
 
@@ -513,7 +513,7 @@ def save_r4(name, array, nanvalue=0):
     array = array.flatten()
     array = array.astype('f4')
     array.tofile(name)    
-    print name
+    print(name)
 
 
 def save_bil(IG, outpath, amp, phs, dtype='f4', nanvalue=np.NaN):
@@ -669,7 +669,7 @@ def save_gdal(Interferogram=None, nparray=None, outfile=None, geotrans=None, pro
         driver = gdal.GetDriverByName(format)
         nd = driver.Register()
     except:
-        print "unrecognized format, check 'gdalinfo --formats'"
+        print("unrecognized format, check 'gdalinfo --formats'")
     
     # DATA
     rows,cols = nparray.shape
@@ -677,7 +677,7 @@ def save_gdal(Interferogram=None, nparray=None, outfile=None, geotrans=None, pro
     outDataset = driver.Create(outfile, cols, rows, 1, gdal.GDT_Float32)
     outBand = outDataset.GetRasterBand(1)
     if nanval:
-        print 'setting nans to {}'.format(nanval)
+        print('setting nans to {}'.format(nanval))
         outBand.SetNoDataValue(nanval) #or np.NaN?
         nparray[np.isnan(nparray)] = nanval
     #order: array, xoffset, yoffset (integers)... if successful result=0
@@ -715,7 +715,7 @@ def get_geotrans(geofile):
         #NOTE: carefl with positive & negative conventions...
         dy = float(self.Rsc['Y_STEP'])
     except:
-        print 'ERROR Unable to load geotransform information!'
+        print('ERROR Unable to load geotransform information!')
         raise
     
     geotrans = (ulx, dx, xrot, uly, yrot, dy)
@@ -729,7 +729,7 @@ def gdal2grd(gdalFile, outName=None):
     if outName == None:
         outName = gdalFile + '.grd'
     cmd = '/usr/bin/gdal_translate -of GMT {0} {1}'.format(gdalFile, outName) 
-    print cmd; os.system(cmd)
+    print(cmd); os.system(cmd)
     return outName
 
 
@@ -739,7 +739,7 @@ def grd2gdal(grdFile, outName=None):
     if outName == None:
         outName = grdFile + '.bin'
     cmd = '/usr/bin/gdal_translate -of ENVI {0} {1}'.format(grdFile, outName) 
-    print cmd; os.system(cmd)
+    print(cmd); os.system(cmd)
     return outName
 
 
@@ -748,7 +748,7 @@ def save_kmz(Geogram, data=None, outname=None, cmap=None, vmin=None, vmax=None,
     """Write geocoded array as a png and save google earth kmz image overlay.
     cmap is 'jet by default. vmin & vmax autoscaled unless specified.
     colorbar=path to colorbar.png file to use as a google earth static overlay"""
-    print 'saving kmz file...'
+    print('saving kmz file...')
     self = Geogram
     kmzname = outname
     kmlname = kmzname[:-3] + 'kml'
@@ -930,28 +930,28 @@ def calc_ramp(array, ramp='quadratic', custom_mask=None):
     dgood = d[g].reshape((-1,1))
 
     if ramp == 'quadratic':
-        print 'fit quadtratic surface'
+        print('fit quadtratic surface')
         G = np.concatenate([x, y, x*y, x**2, y**2, np.ones_like(x)], axis=1) #all pixels        
         Ggood = np.vstack([x[g], y[g], x[g]*y[g], x[g]**2, y[g]**2, np.ones_like(x[g])]).T
         try:
             m,resid,rank,s = np.linalg.lstsq(Ggood,dgood)
         except ValueError as ex:
-            print '{}: Unable to fit ramp with np.linalg.lstsq'.format(ex)
+            print('{}: Unable to fit ramp with np.linalg.lstsq'.format(ex))
             
             
     elif ramp == 'linear':
-        print 'fit linear surface'
+        print('fit linear surface')
         G = np.concatenate([x, y, x*y, np.ones_like(x)], axis=1)
         Ggood = np.vstack([x[g], y[g], x[g]*y[g], np.ones_like(x[g])]).T  
         try:
             m,resid,rank,s = np.linalg.lstsq(Ggood,dgood)
         except ValueError as ex:
-            print '{}: Unable to fit ramp with np.linalg.lstsq'.format(ex)
+            print('{}: Unable to fit ramp with np.linalg.lstsq'.format(ex))
     
     elif ramp == 'dc':
         G = np.ones_like(phs)
         m = np.mean(phs)
-        print 'fit dc offset'
+        print('fit dc offset')
     
     ramp = np.dot(G,m)
     ramp = ramp.reshape(phs.shape)
@@ -982,7 +982,7 @@ def radar2latlon(Interferogram, row=None, col=None, KmPerDeg=110.0):
     """ APPROXIMATE lat,lon coordinate of radar pixel"""
     #see latlon2radar
     # call IntSim command line utility
-    print 'TODO'
+    print('TODO')
 
 
 def latlon2radar(Interferogram, lat=None, lon=None, KmPerDeg=110.0):
@@ -990,7 +990,7 @@ def latlon2radar(Interferogram, lat=None, lon=None, KmPerDeg=110.0):
     #NOTE: must use affine transformation image is mostly rotated and translated
     #and geo-referencing just accounts for earth's curvature...
     #see scipy.ndimage.interpolation.affine_transformation or matplotlib.transform
-    print 'TODO'
+    print('TODO')
 
 
 def latlon2range_cp(pointLat,pointLon,gridLat,gridLon):
@@ -1211,7 +1211,7 @@ def distance_vicenty(point1, point2, radius=6371e3):
     most accurate (~1mm accuracy over 1km)
     http://en.wikipedia.org/wiki/Great-circle_distance
     """
-    print 'Use latlon2range function'
+    print('Use latlon2range function')
     
 
 # ============================================================================ #
@@ -1242,7 +1242,7 @@ def fit_surface(array, type='quad', show=False):
         
         G = np.array([np.ones(np.size(g)), xf[g], yf[g], xf[g]**2, xf[g]*yf, yf[g]**2])
         m, res, rank, singval = np.linalg.lstsq(G.T, df)
-        print 'fit coefficients:', m
+        print('fit coefficients:', m)
         surface = np.dot(G.T,m)
         if show:
             plt.figure()
@@ -1401,8 +1401,8 @@ Continued on next page...\\
 \end{document}
 """)
     
-    print 'Wrote {} interferogram stats'.format(len(self))
-    print 'Output: {0}'.format(texFile)
+    print('Wrote {} interferogram stats'.format(len(self)))
+    print('Output: {0}'.format(texFile))
     
     if runTeX:
         os.system('latex {}'.format(texFile))
@@ -1421,7 +1421,7 @@ def get_stats(Interferogram, histogram=False):
 		d['mean'] = np.nanmean(data)
 		d['std'] = np.nanstd(data)
 		d['var'] = np.nanvar(data)
-		print d
+		print(d)
 
 
 def export_latex_table(Set, baseline_list='list.out', outdir='.', runTeX=False):
@@ -1465,8 +1465,8 @@ def export_latex_table(Set, baseline_list='list.out', outdir='.', runTeX=False):
 \end{table}
 \end{document}
 """)
-    print 'Wrote {} interferogram stats'.format(len(self))
-    print 'Output: {0}'.format(texFile)
+    print('Wrote {} interferogram stats'.format(len(self)))
+    print('Output: {0}'.format(texFile))
     
     if runTeX:
         os.system('latex {}'.format(texFile))
@@ -1533,8 +1533,8 @@ Continued on next page...\\
 \end{center}
 \end{document}
 """)
-    print 'Wrote {} interferogram stats'.format(len(self))
-    print 'Output: {0}'.format(texFile)
+    print('Wrote {} interferogram stats'.format(len(self)))
+    print('Output: {0}'.format(texFile))
 
     # Run system LaTeX commands to create pdf
     if runTeX:
@@ -1627,13 +1627,13 @@ def extents2kml(ig):
 </kml>
 '''.format(**ig.Rsc)       
         )
-    print 'wrote:', name
+    print('wrote:', name)
     
 
 def geocode(Interferogram, transFile, data=None, outname=None, kml=False):
     """call geocode.pl, which makes rect_lookup & rsc
     NOTE: outname must end in .unw"""
-    print 'running geocode.pl'
+    print('running geocode.pl')
     self = Interferogram
     inname = self.Name
     
@@ -1647,7 +1647,7 @@ def geocode(Interferogram, transFile, data=None, outname=None, kml=False):
         inname = save_bil(self, 'tmp.unw', amp, data)
     
     cmd = 'geocode.pl {0} {1} {2}'.format(transFile, inname, outname)
-    print cmd
+    print(cmd)
     os.system(cmd)
     
     #NOTE: not working b/c perl script has multiple returns throughout script
@@ -1668,24 +1668,24 @@ def unw2png(Geogram, outname=None):
     if outname==None:
         outname = self.Name + '.png'
     cmd = 'unw2png.pl {0} {1}'.format(self.Name, outname)
-    print cmd
+    print(cmd)
     os.system(cmd)
 
 
 def georef_timeseries(Timeseries):
     """Save reconstructed deformation for each date in the timeseries
     """
-    print 'Work in progress'
+    print('Work in progress')
     os.mkdir('tmp_geotimeseries')
     
 
 def georef_timeseries_smooth(Timeseries):
     """ Instread"""
-    print 'Work in progress'
+    print('Work in progress')
 
 def animation_kml_timeseries(Timeseries):
     """save a kml with output from georef_timeseries """
-    print 'work in progress'
+    print('work in progress')
     
 
 def georeference(Interferogram, trans, rsc, data=None, outname='rect_result.unw',
@@ -1793,7 +1793,7 @@ def georeference(Interferogram, trans, rsc, data=None, outname='rect_result.unw'
     
     # Return georeferenced interferogram object
     geo = roipy.data.Geogram(transRSC['OUTPUT'])
-    print os.path.abspath(transRSC['OUTPUT'])
+    print(os.path.abspath(transRSC['OUTPUT']))
     return geo
 
 
@@ -1858,14 +1858,14 @@ def crop_grds(grd1, grd2, bounds=None):
     out1 = grd1[:-4] + '_crop.grd'
     if bounds:
         cmd = 'grdsample {0} -G{1} -R{2}/{3}/{4}/{5}r'.format(grd1,out1,*bounds)
-        print cmd; os.system(cmd)
+        print(cmd); os.system(cmd)
     else:
         cmd = 'grdsample {0} -G{1}'.format(grd1,out1)
-        print cmd; os.system(cmd)
+        print(cmd); os.system(cmd)
     
     out2 = grd2[:-4] + '_crop.grd'
     cmd = 'grdsample {0} -G{1} -R{2}'.format(grd2,out2,out1)
-    print cmd; os.system(cmd)
+    print(cmd); os.system(cmd)
     
     return out1, out2
     

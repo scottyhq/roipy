@@ -22,7 +22,7 @@ class Timeseries():
         self.ParentDir = os.path.dirname(self.DataDir)
         self.RunDir = os.path.join(self.ParentDir, runDirectory)
         if os.path.isdir(self.RunDir): #overwrites if exists
-            print 'WARNING: directory already exists,,, delete or rename it' 
+            print('WARNING: directory already exists,,, delete or rename it') 
         else:
             os.mkdir(self.RunDir)
         #NOTE: change based on machine...
@@ -97,10 +97,10 @@ Width: {Width}
         
         Alternative: repace 'mag' array with 'msk' and continue using load_bil, save_bil formats
         """
-        print 'Saving data for post-processing in: {}'.format(self.RunDir)
+        print('Saving data for post-processing in: {}'.format(self.RunDir))
         
         for ig in self.Set:
-            print ig.Name
+            print(ig.Name)
             # Phase Array - Convert to CM
             phs = roipy.tools.load_half(ig)
             data = phs * ig.Phs2cm
@@ -212,7 +212,7 @@ Width: {Width}
             roipy.tools.save_bil(ig, outpath, amp, phs_syn)
             #roipy.tools.save_rsc(ig.Rsc, outpath + '.rsc') #automatically called
         
-        print 'synthetic test set up in:\n{}'.format(os.path.abspath(outdir))
+        print('synthetic test set up in:\n{}'.format(os.path.abspath(outdir)))
 
 
     def run_all(self):
@@ -239,7 +239,7 @@ Width: {Width}
     def load_files(self):
         """ Save .unw phase (unwraped & converted to LOS displacement) and .msk
         coherence arrays as .npy binary files in  subfolders of timeseries run """
-        print 'Saving numpy mask arrays in {0}'.format(self.ProcDir)
+        print('Saving numpy mask arrays in {0}'.format(self.ProcDir))
         
         if not os.path.isdir(self.ProcDir): os.mkdir(self.ProcDir)
         if not os.path.isdir(self.OutDir): os.mkdir(self.OutDir)
@@ -254,7 +254,7 @@ Width: {Width}
             name = self.save_ma(ig, igram) #Mask_ array is just zeros at this point..
             self.Files[ig.ID] = name
         
-        print 'load_files() complete: {0} interferograms'.format(self.Set.Nig)
+        print('load_files() complete: {0} interferograms'.format(self.Set.Nig))
 
 
     def save_signal_mask(self, outpath, regions=[(250,350,0,100)]):
@@ -263,7 +263,7 @@ Width: {Width}
         for inds in regions:
             mask[inds[0]:inds[1],inds[2]:inds[3]] = 1
         np.save(outpath, mask)
-        print 'saved signal mask as {}'.format(outpath)
+        print('saved signal mask as {}'.format(outpath))
         
         
     def load_signal_mask(self, path):
@@ -277,7 +277,7 @@ Width: {Width}
         pixels from the edges. Note that up=3 will remove 4 pixels from the
         top of the interferogram since python indexing starts at 0"""
         self.MaskPrefix = 'b' + self.MaskPrefix  #prepend 'b' for border
-        print 'Masking edge pixels: left={0}, right={1}, top={2}, bottom={3}'.format(left,right,top,bottom)
+        print('Masking edge pixels: left={0}, right={1}, top={2}, bottom={3}'.format(left,right,top,bottom))
         for ig in self.Set:
             igram = self.load_ma(ig)
             igram[:top,:] = ma.masked
@@ -286,14 +286,14 @@ Width: {Width}
             igram[:,-right:] = ma.masked
             mskFile = self.MaskPrefix + 'Mask_' + ig.Name[:-4]
             np.save(os.path.join(self.ProcDir, mskFile), igram.mask)
-            print mskFile
-        print 'mask_border() complete: {0} interferograms'.format(self.Set.Nig)
+            print(mskFile)
+        print('mask_border() complete: {0} interferograms'.format(self.Set.Nig))
 
 
     def mask_gradient(self, override=False):
         """ use np.gradient() to get rid of isolated unwrapping errors (surrounded by nans and edge effects """
         self.MaskPrefix = 'g' + self.MaskPrefix #append prefix 'g' for gradient
-        print 'applying gradient filter to remove edge effects and isolated unwrapping errors'
+        print('applying gradient filter to remove edge effects and isolated unwrapping errors')
         # If a signal mask exists, use it to prevent np.gradient() from scrapping important data
         indSignal = np.zeros(self.Set.Size)
         if override:
@@ -309,14 +309,14 @@ Width: {Width}
             igram[np.isnan(Fx)] = ma.masked
             mskFile = self.MaskPrefix + 'Mask_' + ig.Name[:-4]
             np.save(os.path.join(self.ProcDir, mskFile), igram.mask)
-            print mskFile
-        print 'Done'
+            print(mskFile)
+        print('Done')
 
             
     def mask_incoherent(self):
         """ mask pixel values that have coherence values in .msk file less than specified threshold. 0=incoherent, 1=fully coherent """
         self.MaskPrefix = 'i' + self.MaskPrefix 
-        print 'Masking pixel values where .msk value is less than {0}...'.format(threshold)
+        print('Masking pixel values where .msk value is less than {0}...'.format(threshold))
         for ig in self.Set:
             igram = self.load_ma(ig)
             mskFile = ig.Path[:-3] + 'msk'
@@ -325,15 +325,15 @@ Width: {Width}
             igram[incoherent.mask] = ma.masked
             mskFile = self.MaskPrefix + 'Mask_' + ig.Name[:-4]
             np.save(os.path.join(self.ProcDir, mskFile), igram.mask)
-            print mskFile
+            print(mskFile)
              
-        print 'Done'
+        print('Done')
         
         
     def mask_sparse(self, threshold=10):
         """ mask pixels that are not coherent in more than <threshold> interferograms in a set"""
         self.MaskPrefix = 's' + self.MaskPrefix 
-        print 'Masking pixels that do not have at least {0} coherent values'.format(threshold)
+        print('Masking pixels that do not have at least {0} coherent values'.format(threshold))
         # each pixel assigned an integer corresponding to # of igrams where coherent
         # NOTE: save coverage map if it doesn't exist already
         coverage = self.get_coverage()
@@ -342,7 +342,7 @@ Width: {Width}
              igram = self.load_ma(ig)
              igram[sparse.mask] = ma.masked
              self.save_ma(ig, igram) 
-        print 'Done'
+        print('Done')
 
 
     def make_B(self):
@@ -353,7 +353,7 @@ Width: {Width}
         for i in np.arange(n):
             for j in np.arange(self.TimeIndex[i,1], self.TimeIndex[i,0]-1):
                 #B[i,j] = 
-                print 'd'
+                print('d')
 
     # NOTE: moved to roi_py tools
     '''
@@ -416,7 +416,7 @@ Width: {Width}
 
     def invert_L2_wdls():
         """ perform time series inversion with weighted damped least squares"""
-        print
+        print()
 
     def invert_L1_svd():
         """ SBAS time series inversion using L1 norm
@@ -426,13 +426,13 @@ Width: {Width}
     def invert_L2_svd():
         """ SBAS time series inversion using L2 norm SVD
         reference: Berardino et. al. 2002 IEEE Transaction on Geoscience and Remote Sensing"""
-        print 'Starting SVD inversion'
+        print('Starting SVD inversion')
 
         pix2avevel = np.nans(ts.size)
         pix2cumdef = np.nans(ts.size)
 
         for i in np.range(ts.WIDTH):
-            print 'column {0}'.format(i)
+            print('column {0}'.format(i))
             pix2date = np.zeros(ts.LENGTH, ts.DATES)
             pix2model = np.zeros(ts.LENGTH, ts.DT)
             colPix = np.zeros(ts.LENGTH, ts.IGRAMS)
@@ -455,7 +455,7 @@ Width: {Width}
                 # Set up B matrix
                 B = np.zeros(len(indIG), len(dtVector))
 
-        print 'Done'
+        print('Done')
     
     
     def omit(self, date=None, IG=None):
@@ -627,12 +627,12 @@ omitList = [{Omissions}];
 %% Tandem pairs = [{Tandems}];
 """.format(**settings))
         prerun.close()
-        print 'Wrote %s, ready for RunTS.m' % fullpath
+        print('Wrote %s, ready for RunTS.m' % fullpath)
 
         #pickle the omissions list for easy re-use later
         #NOTE: ultimately write this all in python and use input/output ascii files
         if hasattr(self,'Omissions'):
-            pickle.dump(self.Omissions.keys(), os.path.join(self.RunDir,'omissions.p'))
+            pickle.dump(list(self.Omissions.keys()), os.path.join(self.RunDir,'omissions.p'))
             #to reload set10.omit(IG=pickle.load('omissions.p'))
     
     

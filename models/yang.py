@@ -33,7 +33,7 @@ import numpy as np
 # ================
 # Inversion
 # ================
-def invert_resample( (easting,northing,cart2los), xcen,ycen,z0,P,a,b,phi,theta,mu=1.0,nu=0.25):
+def invert_resample(easting,northing,cart2los,xcen,ycen,z0,P,a,b,phi,theta,mu=1.0,nu=0.25):
     '''
     Inputs:
     -------
@@ -686,7 +686,7 @@ def get_cart2los(look,head):
 
 if __name__ == '__main__':
     # Benchmark matching matlab demo.m
-    print 'Functions intended for use within roipy. Here is a benchmark'
+    print('Functions intended for use within roipy. Here is a benchmark')
     #benchmark()
     test_invert()
     lazufre_remy2014()

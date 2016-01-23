@@ -127,7 +127,7 @@ def add_interseismic(Interferogram):
     """ For long-track interferograms subtract estimated interseismic signal
     See Fournier et al 2011
     """
-    print 'Not implemented yet'
+    print('Not implemented yet')
     #figure3 shows interseismic ramps on the order of 3mm
 
 

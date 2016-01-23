@@ -21,7 +21,7 @@ class Interferogram():
     -------
     >>> import roi_py as rp
     >>> ig = rp.data.Interferogram(path/to/interferogram)
-    >>> print ig
+    >>> print(ig)
     """
 
     def __init__(self, filepath):
@@ -85,7 +85,7 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
         try:
             self.pix2km()
         except:
-            print 'pix2km info not in rsc file...'
+            print('pix2km info not in rsc file...')
         
     def pix2km(self, inc_mean=None):
         """ ESTIMATE dimensions of data in km rather than radar coordinates """
@@ -95,7 +95,7 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
         #             't2003':20.0,
         #             't2318':23.1,
         #             'unspecified':22.8}
-        #print self.Name
+        #print(self.Name)
         #inc_mean = incidence[self.Rsc['TRACK']]
         
         # NOTE: could make more accurate version of this that uses incidence file...
@@ -111,7 +111,7 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
                 look_mean = corners.mean()
                 inc_mean = look_mean + 4.0 #estimate... 3-5 based on experience
             except:
-                print 'Unable to estimate mean incidence angle from LOOK_REF entries in .rsc'
+                print('Unable to estimate mean incidence angle from LOOK_REF entries in .rsc')
 
         slant2groundx = 1e-3 * (1 / np.sin(np.deg2rad(inc_mean)))
         slant2groundy = 1e-3 * float(self.Rsc['EARTH_RADIUS']) / (float(self.Rsc['EARTH_RADIUS']) + float(self.Rsc['HEIGHT']))
@@ -138,7 +138,7 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
         try:
             self.get_dates() #conversion from string to serial dates
         except:
-            print 'Warning: Unable to extract date information from rsc'
+            print('Warning: Unable to extract date information from rsc')
         
         if 'TIME_SPAN_YEAR' not in self.Rsc:
             self.fix_timespan()
@@ -197,7 +197,7 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
             try:
                 var, value = line.split()
             except:
-                print 'Unable to import from .rsc:',line
+                print('Unable to import from .rsc:',line)
             metadata[var] = value
         rscFile.close()
 
@@ -255,7 +255,7 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
         timespan from extracting the second date from the DATE12 keyword"""
         deltaT = self.Date2 - self.Date1
         self.Rsc['TIME_SPAN_YEAR'] = str(deltaT.days / 365.242)
-        print 'adding TIME_SPAN_YEAR to %s.rsc' % self.Name
+        print('adding TIME_SPAN_YEAR to %s.rsc' % self.Name)
         
         rsc = open(self.Path + '.rsc', 'a')
         rsc.write('TIME_SPAN_YEAR       %s\n' % self.Rsc['TIME_SPAN_YEAR'])
@@ -306,7 +306,7 @@ class Geogram(Interferogram):
             dy = float(self.Rsc['Y_STEP'])
             self.Geotrans = (ulx, dx, xrot, uly, yrot, dy)
         except:
-            print 'WARING: Unable to load geotransform information!'
+            print('WARING: Unable to load geotransform information!')
             raise
 
 # ---------------------------------------------------------------------------- #        
@@ -316,7 +316,7 @@ class Set():
     Example                                                                                                                                                                                                                                                                                                   
     --------
     >>> track227 = Set(<path/to/rectified/227/interferograms>) 
-    >>> print track227
+    >>> print(track227)
     """    
     
     
@@ -327,7 +327,7 @@ class Set():
             self.Igrams     = self.load_directory(pattern=pattern)
         else:
             self.DataDir = os.path.dirname(os.path.abspath(input[0]))
-            #print self.DataDir
+            #print(self.DataDir)
             self.Igrams = self.load_paths(input)
         self.Nig        = len(self.Igrams)
         self.Width      = self.Igrams.values()[0].Width
@@ -337,7 +337,7 @@ class Set():
         self.Tandems    = []
         try:
             self.Track = re.search("t\d{4}",self.DataDir).group()
-            #print 'got track'
+            #print('got track')
         except:
             self.Track = 'unspecified'
         self.setup()
@@ -535,7 +535,7 @@ Width: {Width}
     
     def assign_baselines_new():
         """Get baseline values from rscs """
-        print 'TODO'
+        print('TODO')
     
     def assign_baselines(self):
         """ Use self.Baselines dictionary to assign perp baseline as ig attribute"""
@@ -570,7 +570,7 @@ Width: {Width}
         self.get_time_intervals()
         self.get_time_index()
         self.Tandems = dates
-        print 'Removed %s from timeseries' % self.Tandems
+        print('Removed %s from timeseries' % self.Tandems)
 
 
         
@@ -593,13 +593,12 @@ Width: {Width}
                 outLIST = [self.Igrams[x].Rsc[outattr] for x in LIST]
                 inds = np.argsort(LIST) #sort list by another list
                 LIST = list(np.take(outLIST,inds))
-            #print '\n'.join(LIST)
+            #print('\n'.join(LIST))
             return LIST
 
         if attr and not val:
             LIST = [ig.Rsc['PAIR'] + '  ' + ig.Rsc[attr] for ig in self]
             LIST.sort()
-            #print '\n'.join(LIST)
             return LIST
         
         if IG:
@@ -617,7 +616,6 @@ Width: {Width}
         row, col = np.where(self.Pairs == date)
         matches = self.Pairs[row,~col]
         return matches
-        #print '\n'.join(iglist)
 
 
     def match_igrams(Set,date):
@@ -652,7 +650,6 @@ Width: {Width}
             iglist = iglist1 + iglist2
         
         elif range:
-            #print range
             keep = []
             for ig in self: 
                 if (ig.Rsc['DATE2'] <= range[0]) or (ig.Rsc['DATE1'] >= range[1]):
@@ -662,9 +659,8 @@ Width: {Width}
             self.Omissions[IG] = self.Igrams[IG]
             del self.Igrams[IG]
         
-        print 'Omitted the following interferograms:'        
-        print '\n'.join(iglist)
-        #print len(self.Igrams)
+        print('Omitted the following interferograms:')        
+        print('\n'.join(iglist))
 
         # Set up timeseries for new subset of interferograms
         self.setup()
@@ -688,8 +684,8 @@ Width: {Width}
             self.Igrams[IG] = self.Omissions[IG]
             del self.Omissions[IG]
         self.setup() #re-run setup() routine without ommitted files
-        print 'Returning the following interferograms:'        
-        print '\n'.join(iglist)
+        print('Returning the following interferograms:')        
+        print('\n'.join(iglist))
 
 
 

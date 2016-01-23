@@ -51,6 +51,9 @@ __version__ = 1.0
 __author__ = 'sth54@cornell.edu'
 __lastupdate = '1/12/12'
 
-import data, tools, plot, timeseries, noise, models
+#Python 2
+#import data, tools, plot, timeseries, noise, models
 
+# Python 3
+from roipy import data, tools, plot, timeseries, noise, models
 

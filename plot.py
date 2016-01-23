@@ -82,11 +82,11 @@ def pig(Interferogram, array=2, title='', units='radar', cunits='phase', ax=None
 
 def pcolor(array, title='', ig=None, units='pixels', cmap='jet', ax=None):
 	""" display a colormap of an interferogram. If units='km', use RANGE_PIXEL_SIZE
-    and AZIMUTH_PIXEL_SIZE in the .rsc to scale the display"""
+	and AZIMUTH_PIXEL_SIZE in the .rsc to scale the display"""
 	#print title, units, ax
 	if ax==None:
 		fig = plt.figure()
-
+	
 	#http://matplotlib.org/examples/color/colormaps_reference.html
 	# for insar, best use RdBu_r, bwr, seismic (each differ just in terms of extreme saturation val 
 	im = plt.imshow(array, cmap=plt.get_cmap(cmap)) 
@@ -97,11 +97,11 @@ def pcolor(array, title='', ig=None, units='pixels', cmap='jet', ax=None):
 		maxx = ig.Width * ig.col2km
 		maxy = ig.Length * ig.row2km
 		im.set_extent((0,maxx,0,maxy))
-    
+	
 	plt.xlabel('range ({})'.format(units))
 	plt.ylabel('azimuth ({})'.format(units))
 	plt.title(title)
-    #cb.set_label('dLOS (cm)') #not necessarily... can also plot dems etc
+	#cb.set_label('dLOS (cm)') #not necessarily... can also plot dems etc
 	plt.show()  
 
 
@@ -315,31 +315,31 @@ def geo_correlate(arrayX, arrayY, order=1):
 
 
 def side_by_side_old(array1, array2, array3, fixCaxis=True):
-    """ DEPRECATED Plot two arrays with imshow, keep the same colorbar for each, third
-    array has it's own colorbar scale (eg. for residual)"""
-    origin = 'upper'
-    fig = plt.figure()
-    ax1 = fig.add_subplot(131)
-    ax1.set_title('Rmp')
-    im1 = ax1.imshow(array1,origin=origin,cmap=plt.cm.jet)
-    fig.colorbar(im1)
-
-    ax2 = fig.add_subplot(132)
-    ax2.set_title('Synthetic')
-    im2 = ax2.imshow(array2,origin=origin,cmap=plt.cm.jet)
-
-    if fixCaxis:
-	# Set the same colorscale bounds as im1
-	norm = mpl.colors.Normalize(vmin=np.nanmax(array1), vmax=np.nanmax(array1))
+	""" DEPRECATED Plot two arrays with imshow, keep the same colorbar for each, third
+	array has it's own colorbar scale (eg. for residual)"""
+	origin = 'upper'
+	fig = plt.figure()
+	ax1 = fig.add_subplot(131)
+	ax1.set_title('Rmp')
+	im1 = ax1.imshow(array1,origin=origin,cmap=plt.cm.jet)
+	fig.colorbar(im1)
+	
+	ax2 = fig.add_subplot(132)
+	ax2.set_title('Synthetic')
+	im2 = ax2.imshow(array2,origin=origin,cmap=plt.cm.jet)
+	
+	if fixCaxis:
+		# Set the same colorscale bounds as im1
+		norm = mpl.colors.Normalize(vmin=np.nanmax(array1), vmax=np.nanmax(array1))
 	im2.set_norm(norm) 
-    fig.colorbar(im2)
-
-    ax3 = fig.add_subplot(133)
-    ax3.set_title('Residual')
-    im3 = ax3.imshow(array3,origin=origin,cmap=plt.cm.jet)
-    fig.colorbar(im3)
-    
-    plt.draw()
+	fig.colorbar(im2)
+	
+	ax3 = fig.add_subplot(133)
+	ax3.set_title('Residual')
+	im3 = ax3.imshow(array3,origin=origin,cmap=plt.cm.jet)
+	fig.colorbar(im3)
+	
+	plt.draw()
 
 
 def side_by_side(array1, array2, array3):
@@ -848,7 +848,7 @@ def igrams_sharing_date(ts, date, nrow=1, prefix='RmpMskDef', cbar='each',
     for i,ignum in enumerate(selections):
         ax = grid[i]
         ig = ts.Set[ignum]
-        print ig.Name
+        print(ig.Name)
         data = tools.load_binary_old(ts, ig, prefix=prefix)
         if mask:
             data[badpix] = np.nan
@@ -914,7 +914,7 @@ def map_date_coverage(Timeseries, prefix='RmpMskDef', platform=None, ax=None):
     elif platform == 'Envisat':
         iglist = self.Set.query('PLATFORM', 'Envisat')
     ndates = len(iglist)
-    print '{} total dates'.format(ndates)
+    print('{} total dates'.format(ndates))
     
     #NOTE: old method, based on matlab output... more efficient, but hard to
     #distinguish ERS from Envisat
@@ -950,7 +950,7 @@ def map_date_coverage(Timeseries, prefix='RmpMskDef', platform=None, ax=None):
     #pcolor(dqmap, '{0} {1} Dates Per Pixel'.format(self.Set.Track, platform))
     discrete_jet = cmap_discretize(plt.cm.jet, ndates)
     im = ax.imshow(dqmap, cmap=discrete_jet)
-    cbar = fig.colorbar(im, ticks=range(ndates+1))
+    cbar = fig.colorbar(im, ticks=list(range(ndates+1)))
     ax.set_title('{0} {1} Dates Per Pixel'.format(self.Set.Track, platform))
     plt.show()
     
@@ -1015,7 +1015,7 @@ def map_interferogram_coverage(Timeseries, prefix='RmpMskDef', platform=None, ax
         iglist = self.Set.query('PLATFORM', 'ERS2')
     elif platform == 'Envisat':
         iglist = self.Set.query('PLATFORM', 'Envisat') 
-    print '{} total interferograms'.format(len(iglist))
+    print('{} total interferograms'.format(len(iglist)))
     for ig in iglist:
         data = tools.load_binary_old(self, self.Set.Igrams[ig], prefix=prefix)
         indGood = np.isfinite(data)
@@ -1068,14 +1068,14 @@ def vmap_ginput(Timeseries, fignum=1):
     
     done = False
     while not done:
-        print 'Select a timeseries point by left-clicking mouse on image'
+        print('Select a timeseries point by left-clicking mouse on image')
         points = np.asarray(fig.ginput(),dtype=int)
         ax.plot(points[:,0],points[:,1],'k.',scalex=False,scaley=False)
         index = points[0][::-1] #extract tuple, swap order
         timeseries_separate(Timeseries, index=index, ax=ax2, annotate=True)
         
         # tap any key to stop, mouse click selects a new point
-        print 'Left-click in image to continue, Press a key in the image to exit'
+        print('Left-click in image to continue, Press a key in the image to exit')
         done = plt.waitforbuttonpress()
         ax2.clear()
         ax.lines.pop() #remove point marker
@@ -1084,7 +1084,7 @@ def vmap_ginput(Timeseries, fignum=1):
 
 def basemap_ginput(fignum, geofile, interp='nn',nsamp=500):
     """Extract profile of arbitrary straight line from a map overlay"""
-    print 'Select start and end points by left-clicking'
+    print('Select start and end points by left-clicking')
     sys.stdout.flush()
     fig = plt.figure(fignum)
     ax = fig.gca()
@@ -1109,7 +1109,7 @@ def basemap_ginput(fignum, geofile, interp='nn',nsamp=500):
     length = int(np.hypot(x1-x0, y1-y0)) #sample each pixel line passes through
     x = np.linspace(x0, x1, length)
     y = np.linspace(y0, y1, length)
-    print x0,y0
+    print(x0,y0)
     zi = phase[y.astype(np.int), x.astype(np.int)] #check transpose?
     
     # Plot profile w/ kilometers on x-axis
@@ -1135,7 +1135,7 @@ def profile_ginput(fignum=None, interp='nn', nsamp=500, showline=True):
     """ Use ginput to draw a profile line between two arbitrary points on
     an imshow() figure"""
     #NOTE: if georeferenced used latlon2range for axes in km?
-    print 'Select start and end points by left-clicking'
+    print('Select start and end points by left-clicking')
     sys.stdout.flush() #NOTE: ensures print statement shows up before function exits
     
     if fignum == None:
@@ -1399,7 +1399,7 @@ def profile_collapsed(data, center, yex=(-0.5,1.0), nbins=100, markevery=10, ax=
     #pcolor(array)
     
     # Plot Mean & Std deviation envelopes based on bins
-    print nbins
+    print(nbins)
     data = data.flatten()
     bins = np.linspace(distance.min(), distance.max(), nbins)
     indBins = np.digitize(distance.flatten(), bins)
@@ -1520,7 +1520,7 @@ def timespans_dq():
     #date point gets colored value based on average standard deviation of scenes
     #using that date. NOTE: Mask out regions of know signal or else large timespan
     #scenes show high variance.
-    print 'Not Implemented'
+    print('Not Implemented')
     
 def date_variance(Timeseries, signalmask=None, prefix='RmpMskDef', ax=None):
     """ Calculate the average variance and standard deviation of all interferograms
@@ -1822,7 +1822,7 @@ def colorbar_only(vmin,vmax,outname='colorbar.png',figsize=(4,1),
     figsize in inches
     cbsize in [left, bottom, %length, %height]
     """
-    print vmin, vmax
+    print(vmin, vmax)
     if orient == 'vertical':
         figsize = (1,4)
         cbsize = [0.05,0.05,0.1,0.9]
@@ -1850,7 +1850,7 @@ def colorbar_only(vmin,vmax,outname='colorbar.png',figsize=(4,1),
                 transparent=transparent,
                  bbox_inches='tight', #doesn't work for ps output...
                  )
-    print 'output {}'.format(outname)
+    print('output {}'.format(outname))
 
 
 
@@ -2005,7 +2005,7 @@ def timeseries(Timeseries, index=('row','col'), cumdef=None, order=1, annotate=N
             lineFit = ax.plot(X_, poly(X_), 'k-',label='linear')
             #equation = r'$y = %.3fx + %.3f$' % (slope,intercept)
             slope_cmyr = slope*365 #cm/day to cm/yr
-            print slope_cmyr,r_sq
+            print(slope_cmyr,r_sq)
             slopeText = r'$m = {:.1f} cm/yr$'.format(slope_cmyr) #1 decimal point sig fig
             fitQual = r'$R^2 = {:.2f} $'.format(r_sq)
             ax.text(0.95, 0.10, slopeText,  #.95 upper right
@@ -2036,7 +2036,7 @@ def timeseries(Timeseries, index=('row','col'), cumdef=None, order=1, annotate=N
     '''
     
     if fit == 'quadratic':
-        print 'fitting 2nd-order polynomial'
+        print('fitting 2nd-order polynomial')
         coef = np.polyfit(X_,Y,2)
         poly = np.poly1d(coef)
         xmin,xmax = ax.get_xlim()
@@ -2244,7 +2244,7 @@ def baseline_time(Set):
 def baseline_both(Set):
     """ Sort by increasing temoral baseline, after Casu et al 2008 fig2"""
     #Make use of mpl.axis_grid1 and numpy recarray & sort by timespan
-    print 'Low on the priority list...'
+    print('Low on the priority list...')
     
     
 def baseline_plot(Set):
@@ -2320,7 +2320,7 @@ def data_frames(ts, fwidth=17.0, fheight=11.0, nrow=4, normalize=True,
 
     for i,ig in enumerate(ts.Set):
         ax = grid[i]
-        print ig.Name
+        print(ig.Name)
         #data = np.fliplr(cumdef[i].reshape((length,width),order='F')) #NOTE: 'F' needed b/c matlab
         #data = tools.load_half(ig) #NOTE: load Rmp/Msk etc
         data = tools.load_binary_old(ts, ig, prefix=prefix)
@@ -2366,7 +2366,7 @@ def data_frames(ts, fwidth=17.0, fheight=11.0, nrow=4, normalize=True,
     
     plt.savefig(outname)
     outpath = os.path.abspath(outname)          
-    print 'saved {}'.format(outpath)        
+    print('saved {}'.format(outpath))        
          
          
             
@@ -2449,7 +2449,7 @@ def project2utm(Point, epsg=32719, printout=True):
 
     if printout:
         newCoords = Point.GetPoint()
-        print oldCoords, newCoords
+        print(oldCoords, newCoords)
     #easting = newGeometry.GetX()
     #northing = newGeometry.GetY()
     #return easting, northing
@@ -2464,7 +2464,7 @@ def get_distance(point1, point2, transObject):
     point2.Transform(transObject)
     point2.GetPoint()
     distance = point1.Distance(point2) / 1000.0 #in kilometers
-    print distance
+    print(distance)
     return distance
 
 

@@ -15,12 +15,10 @@ import matplotlib.pyplot as plt
 import roipy.tools
 
 
-
-
 # =====================
 # Inverse Models
 # =====================
-def invert_fullres( (X,Y,look,head),xcen,ycen,depth,dV,nu):
+def invert_fullres(X,Y,look,head,xcen,ycen,depth,dV,nu):
     """
     Adjust arguments of calc_mogi to work with scipy.omptimize.curvefit convention
     Assumes UTM input for X and Y
@@ -45,7 +43,7 @@ def invert_fullres( (X,Y,look,head),xcen,ycen,depth,dV,nu):
 
     return los.ravel() #flattened arrays required by scipy.optimize
 
-def invert_resample( (easting,northing,cart2los),xcen,ycen,depth,dV,nu=0.25):
+def invert_resample(easting,northing,cart2los,xcen,ycen,depth,dV,nu=0.25):
     """
     Adjust arguments of calc_mogi to work with scipy.omptimize.curvefit convention
     Assumes UTM input for X and Y
@@ -146,8 +144,8 @@ def calc_mogi_dp(x,y,xoff=0,yoff=0,d=3e3,a=500,dP=100e6,mu=4e9,nu=0.25,output='c
     ur = C * rho / R**3    
     uz = C * d / R**3
     
-    print 'uz_max = {:.4f}'.format(np.abs(uz).max()) 
-    print 'ur_max = {:.4f}'.format(np.abs(ur).max())
+    print('uz_max = {:.4f}'.format(np.abs(uz).max())) 
+    print('ur_max = {:.4f}'.format(np.abs(ur).max()))
     
     # Convert surface cylindrical to cartesian
     if output == 'cart':
@@ -207,8 +205,8 @@ def calc_mogi_linmax(x,y,tn,xoff=0,yoff=0,d=3e3,a=500.0,dP=100e6,mu=4e9,nu=0.25,
     ur = C * (r/(R**3)) * term
     uz = C * (d/(R**3)) * term
     
-    print 'uz_max = {:.4f}'.format(uz.max())
-    print 'ur_max = {:.4f}'.format(ur.max())
+    print('uz_max = {:.4f}'.format(uz.max()))
+    print('ur_max = {:.4f}'.format(ur.max()))
     
     # Convert surface cylindrical to cartesian
     if output == 'cart':
@@ -291,7 +289,7 @@ def calc_mogi_genmax(x,y,t,xoff=0,yoff=0,d=4e3,dP=100e6,a=700,nu=0.25,G=30e9,
     tau1 = (alpha / beta) * tau0
     tau2 = tau0 / mu0
     
-    #print 'relaxation times:\nT0={}\nT1={}\nT2={}'.format(tau0,tau1,tau2)
+    #print('relaxation times:\nT0={}\nT1={}\nT2={}'.format(tau0,tau1,tau2))
     
     term1 = ((3.0*K + 4*G*mu0) / (mu0*beta))
     term2 = ((3.0 * G**2 * np.exp(-t/tau1))*(1-mu0)) / (beta*alpha)
@@ -348,7 +346,7 @@ def calc_mctigue(x,y,xoff=0,yoff=0,d=3e3,dP=10e6,a=1500.0,nu=0.25,mu=4e9,
     
     # 2nd order term
     if terms==2:
-        print 'adding eps**6 term'
+        print('adding eps**6 term')
         A = ((1 - nu) * (1 + nu)) / (2 * (7 - 5*nu))
         B = (15 * (2 - nu) * (1 - nu)) / (4 * (7 - 5*nu)) 
         uz2 =  -eps**6 * ((A * (1 / np.hypot(r,1)**3)) - (B * (1 / np.hypot(r,1)**5)))
@@ -401,8 +399,8 @@ def calc_mogi_viscoshell(x,y,t,xoff=0,yoff=0,d=4e3,a=1000.0,b=1200.0,dP=100e6,
     uz = (((1-nu)*dP*a**3) / (mu*d**2)) * scale * (1 + rho**2)**(-3/2.0)
     ur = rho * uz
     
-    print 'uz_max = {:.4f}'.format(uz.max()) #sub-millimeter precision at best!
-    print 'ur_max = {:.4f}'.format(ur.max())
+    print('uz_max = {:.4f}'.format(uz.max())) 
+    print('ur_max = {:.4f}'.format(ur.max()))
     
     return ur, uz
     
@@ -443,8 +441,8 @@ def calc_mogi_viscoshell_dPt(x,y,t,P0,tS,xoff=0,yoff=0,d=4e3,a=1000.0,b=1200.0,
     uz = (((1-nu)*P0*a**3) / (mu*d**2)) * (1 + rho**2)**(-3/2.0) * scale
     ur = rho * uz
     
-    print 'uz_max = {:.4f}'.format(uz.max()) #sub-millimeter precision at best!
-    print 'ur_max = {:.4f}'.format(ur.max())
+    print('uz_max = {:.4f}'.format(uz.max())) 
+    print('ur_max = {:.4f}'.format(ur.max()))
     
     return ur, uz, P
 
