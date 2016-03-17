@@ -4,14 +4,13 @@ attributes in UpperCase
 methods in lower_case
 """
 
+from __future__ import print_function
 import sys
 import numpy as np
 import glob
 import datetime as dt
 import os.path
 import re
-
-
 
 class Interferogram():
     """General interferogram object (from any platform: ERS, Envisat, ALOS)

@@ -2,13 +2,13 @@
 I/O tools for interacting with ROI_PAC data arrays
 """
 
+from __future__ import print_function
 import matplotlib.pyplot as plt #for saving np array as an image
 #import scipy.stats as ss
 import numpy as np
 import numpy.ma as ma
 from scipy.io import loadmat
 from scipy.io import netcdf_file as netcdf
-
 from time import sleep
 
 import shutil
@@ -28,7 +28,10 @@ import roipy.data #NOTE: should keep this separate? cross referencing...
 #import roipy.plot #can't cross reference? since roipy.plot imports roipy.tools
 import roipy.models #check that models doesn't import tools?
 
-from osgeo import osr, ogr, gdal
+#from osgeo import osr, ogr, gdal
+import osr
+import ogr
+import gdal
 #NOTE: must manually add location of projection files for gdal? or set environment variable...
 #/home/scott/Enthought/Canopy_64bit/User/share/gdal/gcs.csv
 #sys.path.append('/home/scott/epd-7.2/share/gdal')
@@ -728,7 +731,7 @@ def gdal2grd(gdalFile, outName=None):
     """ Since EPD gdal doesn't have netCDF support, must call external command"""
     if outName == None:
         outName = gdalFile + '.grd'
-    cmd = '/usr/bin/gdal_translate -of GMT {0} {1}'.format(gdalFile, outName) 
+    cmd = 'gdal_translate -of GMT {0} {1}'.format(gdalFile, outName) 
     print(cmd); os.system(cmd)
     return outName
 
@@ -738,7 +741,7 @@ def grd2gdal(grdFile, outName=None):
     intermediary command,,, or use scipy load_netcdf (see load_gmt()"""
     if outName == None:
         outName = grdFile + '.bin'
-    cmd = '/usr/bin/gdal_translate -of ENVI {0} {1}'.format(grdFile, outName) 
+    cmd = 'gdal_translate -of ENVI {0} {1}'.format(grdFile, outName) 
     print(cmd); os.system(cmd)
     return outName
 

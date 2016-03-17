@@ -2,6 +2,7 @@
 Useful plots to use in ipython sessions
 """
 
+from __future__ import print_function
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.dates as pltdate
@@ -12,20 +13,21 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.lines import Line2D
 from matplotlib.patches import Rectangle, Circle, Polygon
 from matplotlib.colors import Normalize
-
 #for lasso selection - note moved to stand-alone plotting utility
 #from matplotlib.widgets import Lasso
 #from matplotlib.nxutils import points_inside_poly #deprecated w/ matplotlib 1.3.0
 #from matplotlib.colors import colorConverter
 #from matplotlib.collections import RegularPolyCollection
 
-try:
-    from mpl_toolkits.axes_grid1 import ImageGrid
-except:
-    from mpl_toolkits.axes_grid import ImageGrid #NOTE: for old matplotlib
+#try:
+from mpl_toolkits.axes_grid1 import ImageGrid
+#except:
+#    from mpl_toolkits.axes_grid import ImageGrid #NOTE: for old matplotlib
 from mpl_toolkits.axes_grid.inset_locator import inset_axes
 
-from osgeo import gdal, ogr
+#from osgeo import gdal, ogr
+import gdal
+import ogr
 import os
 import numpy as np
 import numpy.ma as ma
