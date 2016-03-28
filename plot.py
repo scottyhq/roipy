@@ -8,7 +8,12 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as pltdate
 from matplotlib.widgets import Slider
 from matplotlib.offsetbox import AnchoredText
-from mpl_toolkits.basemap import Basemap, cm
+
+try:
+	from mpl_toolkits.basemap import Basemap, cm
+except:
+	print('Matplotlb Basemap required for map plots')
+
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.lines import Line2D
 from matplotlib.patches import Rectangle, Circle, Polygon

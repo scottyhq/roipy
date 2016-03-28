@@ -21,7 +21,7 @@ from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
 #import roipy as rp
-import examples
+from . import examples
 
 
 def fBi(sig,eta,parvec,p,q):

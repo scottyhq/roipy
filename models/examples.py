@@ -19,7 +19,7 @@ def okada(example='strike slip'):
 	
 	'''
 	if example == 'strike slip':
-		print '1 m of left-lateral slip on NS-striking vertical fault (70km down to 14km) that ruptures surface'
+		print('1 m of left-lateral slip on NS-striking vertical fault (70km down to 14km) that ruptures surface')
 		xcen=0
 		ycen=0
 		U = 1.0 
@@ -32,7 +32,7 @@ def okada(example='strike slip'):
 		fault_type = 1 
 		
 	if example == 'thrust':
-		print '1m of slip, 70x30km fault, 30-dipping to W with top at 1km below surface'
+		print('1m of slip, 70x30km fault, 30-dipping to W with top at 1km below surface')
 		xcen = 0           
 		ycen = 0            
 		U = 1.0            
@@ -46,7 +46,7 @@ def okada(example='strike slip'):
 		
 	
 	if example == 'finite sill':
-		print '1m of opening, 50x50km sill at 10km depth' 
+		print('1m of opening, 50x50km sill at 10km depth') 
 		xcen = 0             
 		ycen = 0           
 		U = -1.0      
@@ -60,7 +60,7 @@ def okada(example='strike slip'):
 	
 	
 	if example == 'point sill':
-		print 'Sill dimensions (3x3km) much less than depth (20km)'
+		print('Sill dimensions (3x3km) much less than depth (20km)')
 		xcen = 0             
 		ycen = 0           
 		U = -1.0      
@@ -74,7 +74,7 @@ def okada(example='strike slip'):
 	
 	
 	if example == 'normal fault':
-		print '1m of slip, 70x30km fault, 60-dipping to E with top at 1km below surface'
+		print('1m of slip, 70x30km fault, 60-dipping to E with top at 1km below surface')
 		xcen = 0           
 		ycen = 0            
 		U = -1.0            
@@ -88,7 +88,7 @@ def okada(example='strike slip'):
 	
 	
 	if example == 'dyke':
-		print '1m of opening on vertical NS-striking dyke w/ top at 5km depth' 
+		print('1m of opening on vertical NS-striking dyke w/ top at 5km depth') 
 		xcen = 0           
 		ycen = 0         
 		U = -1.0       
