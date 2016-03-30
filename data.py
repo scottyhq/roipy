@@ -15,7 +15,7 @@ import re
 class Interferogram():
     """General interferogram object (from any platform: ERS, Envisat, ALOS)
     Designed for BIL/RMG files output by ROI_PAC that have associated rsc's
-    
+
     Example
     -------
     >>> import roi_py as rp
@@ -41,8 +41,8 @@ class Interferogram():
         if not os.path.isdir(self.ProcDir):
             os.mkdir(self.ProcDir)
         self.setup()
-        
-        
+
+
 
     def __str__(self):
         message ='''
@@ -85,7 +85,7 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
             self.pix2km()
         except:
             print('pix2km info not in rsc file...')
-        
+
     def pix2km(self, inc_mean=None):
         """ ESTIMATE dimensions of data in km rather than radar coordinates """
         #incidence = {'t6089':41.1,
@@ -96,7 +96,7 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
         #             'unspecified':22.8}
         #print(self.Name)
         #inc_mean = incidence[self.Rsc['TRACK']]
-        
+
         # NOTE: could make more accurate version of this that uses incidence file...
         # NOTE: mean value from incidence file much more accurate, this works
         # for envisat, but 'LOOK_REF' keys not in ERS2 metadata...
@@ -116,15 +116,15 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
         slant2groundy = 1e-3 * float(self.Rsc['EARTH_RADIUS']) / (float(self.Rsc['EARTH_RADIUS']) + float(self.Rsc['HEIGHT']))
         scalex = float(self.Rsc['RANGE_PIXEL_SIZE']) * slant2groundx
         scaley = float(self.Rsc['AZIMUTH_PIXEL_SIZE']) * slant2groundy
-        
-        
+
+
         self.Rsc['RANGE_GROUND_PIXEL_SIZE'] = scalex #km per pixel in x
         self.Rsc['AZI_GROUND_PIXEL_SIZE'] = scaley #km per pixel in y
         self.Rsc['MEAN_INCIDENCE'] = inc_mean
         self.col2km = scalex
         self.row2km = scaley
         self.radius2km = np.hypot(scalex,scaley)
-        
+
 
     def add2rsc(self):
         """Add custom header lines to rsc metadata stored in memory"""
@@ -133,12 +133,12 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
             self.Rsc['TRACK'] = re.search("t\d{4}",self.Path).group()
         except:
             self.Rsc['TRACK'] = 'unspecified'
-        
+
         try:
             self.get_dates() #conversion from string to serial dates
         except:
             print('Warning: Unable to extract date information from rsc')
-        
+
         if 'TIME_SPAN_YEAR' not in self.Rsc:
             self.fix_timespan()
         self.Rsc['PATH'] = self.Path
@@ -152,18 +152,18 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
         self.Files['rsc'] = self.Path + '.rsc'
         self.Files['msk'] = self.Path[:-4] + '.msk'
         self.Files['inc'] = self.Path.replace(self.Rsc['DATE12'],'incidence')
-        self.Files['hgt'] = os.path.join(self.DataDir, 'radar_%srlks.hgt' % self.Rsc['RLOOKS'])     
+        self.Files['hgt'] = os.path.join(self.DataDir, 'radar_%srlks.hgt' % self.Rsc['RLOOKS'])
 
-        
+
     def get_dates(self):
         """Extract dates from the metadata and convert them to serial dates"""
-        #self.Date1 = dt.datetime.strptime(self.Rsc['FIRST_FRAME_SCENE_CENTER_TIME'],'%Y%m%d%H%M%S%f')                    
+        #self.Date1 = dt.datetime.strptime(self.Rsc['FIRST_FRAME_SCENE_CENTER_TIME'],'%Y%m%d%H%M%S%f')
         #NOTE: should store DATE1 & DATE2 in .rsc file
         date1 = self.Rsc['DATE12'].split('-')[0] #most recent date listed first
         if date1.startswith('9'):
             self.Date1 = dt.datetime.strptime('19' + date1, '%Y%m%d')
         else:
-            self.Date1 = dt.datetime.strptime('20' + date1, '%Y%m%d') 
+            self.Date1 = dt.datetime.strptime('20' + date1, '%Y%m%d')
         self.Rsc['DATE1'] = self.Date1.strftime('%Y%m%d')
         self.Rsc['DATE1_SERIAL'] = str(self.Date1.toordinal())
 
@@ -172,17 +172,17 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
         if date2.startswith('9'):
             self.Date2 = dt.datetime.strptime('19' + date2, '%Y%m%d')
         else:
-            self.Date2 = dt.datetime.strptime('20' + date2, '%Y%m%d') 
+            self.Date2 = dt.datetime.strptime('20' + date2, '%Y%m%d')
         self.Rsc['DATE2'] = self.Date2.strftime('%Y%m%d')
         self.Rsc['DATE2_SERIAL'] = str(self.Date2.toordinal())
 
         self.Rsc['PAIR'] = self.Rsc['DATE1'] + ' ' + self.Rsc['DATE2']
         self.Rsc['PAIR_SERIAL'] = self.Rsc['DATE1_SERIAL'] + ' ' + self.Rsc['DATE2_SERIAL']
-        
+
         #note: must come after add2rsc() b/c some rsc files missing timespan:
         self.Timespan = abs(float(self.Rsc['TIME_SPAN_YEAR']))
         self.ID = self.Rsc['DATE1'] + ' ' + self.Rsc['DATE2']
-        
+
 
     def load_rsc(self):
         """Read from unw.rsc file & store metadata as an attribute dictionary
@@ -242,20 +242,20 @@ Dtype: {DATA_TYPE}'''.format(**self.Rsc)
             leftArray = np.rot90(leftArray.transpose(),1)
             rightArray = np.rot90(rightArray.transpose(),1)
         else:
-            leftArray = np.rot90(leftArray,2)#N up, W left 
+            leftArray = np.rot90(leftArray,2)#N up, W left
             rightArray = np.rot90(rightArray,2)
 
-        
+
         return leftArray, rightArray
 
 
-    def fix_timespan(self):        
+    def fix_timespan(self):
         """Write the missing 'TIME_SPAN_YEAR' keyword to the .rsc file, get the
         timespan from extracting the second date from the DATE12 keyword"""
         deltaT = self.Date2 - self.Date1
         self.Rsc['TIME_SPAN_YEAR'] = str(deltaT.days / 365.242)
         print('adding TIME_SPAN_YEAR to %s.rsc' % self.Name)
-        
+
         rsc = open(self.Path + '.rsc', 'a')
         rsc.write('TIME_SPAN_YEAR       %s\n' % self.Rsc['TIME_SPAN_YEAR'])
         rsc.close()
@@ -283,15 +283,15 @@ class Geogram(Interferogram):
         if not os.path.isdir(self.ProcDir):
             os.mkdir(self.ProcDir)
         self.setup()
-        
-    
+
+
     def setup(self):
         #self.associate_files()
         self.assign_dtype()
         self.add2rsc()
         #self.Rsc['PLATFORM'] = 'unspecified'
         self.get_geotrans()
-        
+
 
     def get_geotrans(self):
         '''(upper left x, w-e pixel res, rotation, top left y, rotation, n-s pixel resolution)'''
@@ -308,17 +308,17 @@ class Geogram(Interferogram):
             print('WARING: Unable to load geotransform information!')
             raise
 
-# ---------------------------------------------------------------------------- #        
+# ---------------------------------------------------------------------------- #
 class Set():
     """Class for representing a set of rectified interferograms.
 
-    Example                                                                                                                                                                                                                                                                                                   
+    Example
     --------
-    >>> track227 = Set(<path/to/rectified/227/interferograms>) 
+    >>> track227 = Set(<path/to/rectified/227/interferograms>)
     >>> print(track227)
-    """    
-    
-    
+    """
+
+
     def __init__(self, input, pattern='rect*unw'):
         """ input can either be a path or list of file strings"""
         if type(input) is str:
@@ -329,8 +329,8 @@ class Set():
             #print(self.DataDir)
             self.Igrams = self.load_paths(input)
         self.Nig        = len(self.Igrams)
-        self.Width      = self.Igrams.values()[0].Width
-        self.Length     = self.Igrams.values()[0].Length
+        self.Width      = list(self.Igrams.values())[0].Width
+        self.Length     = list(self.Igrams.values())[0].Length
         self.Shape       = (self.Length, self.Width)
         self.Omissions  = {}
         self.Tandems    = []
@@ -340,8 +340,8 @@ class Set():
         except:
             self.Track = 'unspecified'
         self.setup()
-        
-        
+
+
     def __str__(self):
         message ='''
 DataDir: {DataDir}
@@ -353,13 +353,13 @@ Length: {Length}
 Width: {Width}
 '''.format(**self.__dict__)
         return message
-    
-    
+
+
     def __getitem__(self,i):
         """ PairsString are Igrams dictionary keys in chronological order"""
         return self.Igrams[self.PairsString[i]]
-    
-    
+
+
     def __len__(self):
         return len(self.Igrams)
 
@@ -369,7 +369,7 @@ Width: {Width}
         return self
 
 
-    def next(self):
+    def __next__(self):
         """Iterate through interferograms in chronological order """
         if self.index < len(self.Igrams):
             item = self.Igrams[self.PairsString[self.index]]
@@ -398,16 +398,16 @@ Width: {Width}
             self.Orbit = self[0].Rsc['ORBIT_DIRECTION']
         except:
             self.Orbit = 'undefined'
-        
+
 
     def load_directory(self, pattern):
         """Create a dictionary of Interferogram.General() instances from all rect*unw
         files in the specificed path
-        
+
         Usage
         -----
         igrams = Interferogram.load_set(os.getcwd())"""
-        igrams = {} 
+        igrams = {}
         paths = glob.glob(os.path.join(self.DataDir, pattern))
         for path in paths:
             ig = Interferogram(path)
@@ -425,7 +425,7 @@ Width: {Width}
 
         return igrams
 
-    
+
     def get_dates(self):
         """Assign lists of metadata values as instance attributes"""
         recentDates = [int(ig.Rsc['DATE1']) for ig in self]
@@ -443,16 +443,16 @@ Width: {Width}
         """Subtract serial dates to get day intervals"""
         TimeIntervals = np.diff(self.DatesSerial)
         #self.TimeIntervals = [str(dt) for dt in dtList]
-        
+
         return TimeIntervals
-    
-    ''' 
+
+    '''
     def Array2ListoStrings(self):
         """ Just like it sounds """
         #TODO
         strlist = []
     '''
-    
+
     def get_interferograms(self):
         """Assign list of date pairs as Set() attributes in both YYMMDD format
         and serial format"""
@@ -462,7 +462,7 @@ Width: {Width}
         #pairs[:,1] = [int(ig.Rsc['DATE2']) for ig in self]
         #tricky way to sort entire matrix by first column
         #Pairs = pairs[pairs[:,0].argsort(),:] #Problem... does not do secondary sort of second column
-        
+
         #NOTE complicated
         #dates1 = [int(ig.Rsc['DATE1']) for ig in self]
         #dates2 = [int(ig.Rsc['DATE2']) for ig in self]
@@ -470,27 +470,27 @@ Width: {Width}
         #pairs = np.array([dates1,dates2]).T #transpose
         #inds = np.argsort(sorter) #sort list by another list
         #pairs_sorted = np.take(pairs, inds) #only1D array
-        #Pairs = pairs[inds] 
+        #Pairs = pairs[inds]
 
         #NOTE Best, use structured array
         pairs = np.zeros(self.Nig, dtype=[('date1','int'),('date2','int')])
-        pairs['date1'] = [int(ig.Rsc['DATE1']) for ig in self.Igrams.values()]
-        pairs['date2'] = [int(ig.Rsc['DATE2']) for ig in self.Igrams.values()]
+        pairs['date1'] = [int(ig.Rsc['DATE1']) for ig in list(self.Igrams.values())]
+        pairs['date2'] = [int(ig.Rsc['DATE2']) for ig in list(self.Igrams.values())]
         sorted = np.sort(pairs, order=['date1','date2']) #first date1, then date2
         #NOTE: could rewrite other scripts to access as Pairs['date1']
         Pairs = np.array([sorted['date1'],sorted['date2']]).T
         self.PairsString = [str(c1) + ' ' + str(c2) for c1,c2 in Pairs]
-    
+
         pairsSer = np.zeros(self.Nig, dtype=[('date1','int'),('date2','int')])
-        pairsSer['date1'] = [int(ig.Rsc['DATE1_SERIAL']) for ig in self.Igrams.values()]
-        pairsSer['date2'] = [int(ig.Rsc['DATE2_SERIAL']) for ig in self.Igrams.values()]
+        pairsSer['date1'] = [int(ig.Rsc['DATE1_SERIAL']) for ig in list(self.Igrams.values())]
+        pairsSer['date2'] = [int(ig.Rsc['DATE2_SERIAL']) for ig in list(self.Igrams.values())]
         sorted = np.sort(pairsSer, order=['date1','date2']) #first date1, then date2
         PairsSerial = np.array([sorted['date1'],sorted['date2']]).T
         self.PairsSerialString = [str(c1) + ' ' + str(c2) for c1,c2 in PairsSerial]
 
-        return Pairs, PairsSerial 
-        
-        
+        return Pairs, PairsSerial
+
+
 
     def get_time_index(self):
         """Generate the time_index assigning an integer to each SAR acquistion
@@ -528,14 +528,14 @@ Width: {Width}
         longDates = np.char.add('20', record['date'])
         longDates[pre2000] = np.char.add('19', record['date'][pre2000])
         self.Baselines = dict(zip(longDates,record['bperp']))
-        
+
         #self.assign_baselines()
-    
-    
+
+
     def assign_baselines_new():
         """Get baseline values from rscs """
         print('TODO')
-    
+
     def assign_baselines(self):
         """ Use self.Baselines dictionary to assign perp baseline as ig attribute"""
         #NOTE: could also add to .rsc file...
@@ -544,7 +544,7 @@ Width: {Width}
             date2 = ig.Rsc['DATE2']
             ig.Bperp = abs(self.Baselines[date1] - self.Baselines[date2])
             ig.Rsc['BASELINE_PERP'] = ig.Bperp
-             
+
 
 
     def merge_tandems(self):
@@ -556,23 +556,23 @@ Width: {Width}
         indOnes = [i for i,dt in enumerate(dtList) if dt==1]
         dates = [self.Dates[i] for i in indOnes]
         dates_ser = [self.DatesSerial[i] for i in indOnes]
-        
+
         for d1,d2 in zip(dates,dates_ser):
             # Works for lists not numy arrays
             #self.Dates.remove(d1)
             #self.DatesSerial.remove(d2)
-            
+
             # Works for numpy arrays
             self.Dates = np.delete(self.Dates, self.Dates==d1)
             self.DatesSerial = np.delete(self.DatesSerial, self.DatesSerial==d2)
-        
+
         self.get_time_intervals()
         self.get_time_index()
         self.Tandems = dates
         print('Removed %s from timeseries' % self.Tandems)
 
 
-        
+
     def query(self, attr=None, val=None, outattr=None, IG=None):
         """Search metadata for all interferograms and return a list of results
 
@@ -599,14 +599,14 @@ Width: {Width}
             LIST = [ig.Rsc['PAIR'] + '  ' + ig.Rsc[attr] for ig in self]
             LIST.sort()
             return LIST
-        
+
         if IG:
             if type(IG) is int:
                 IG = self.Pairs[IG]
             metadata = vars(self.Igrams[IG])
             if outattr:
                 metadata = metadata[outattr]
-            return metadata     
+            return metadata
 
 
 
@@ -624,7 +624,7 @@ Width: {Width}
         matches = self.Pairs[row]
         return matches
 
-    
+
     def omit(self, date=False, IG=False, range=False):
         """Omit interferograms from set. Can do one of the following:
         1) omit all interferograms containing a certain date
@@ -642,28 +642,28 @@ Width: {Width}
         iglist = []
         if IG:
             iglist = IG #list of interferograms
-        
+
         elif date:
             iglist1 = self.query('DATE1',date)
             iglist2 = self.query('DATE2',date)
             iglist = iglist1 + iglist2
-        
+
         elif range:
             keep = []
-            for ig in self: 
+            for ig in self:
                 if (ig.Rsc['DATE2'] <= range[0]) or (ig.Rsc['DATE1'] >= range[1]):
                     iglist.append(ig.Rsc['PAIR'])
-        
+
         for IG in iglist:
             self.Omissions[IG] = self.Igrams[IG]
             del self.Igrams[IG]
-        
-        print('Omitted the following interferograms:')        
+
+        print('Omitted the following interferograms:')
         print('\n'.join(iglist))
 
         # Set up timeseries for new subset of interferograms
         self.setup()
-        
+
 
 
 
@@ -674,7 +674,7 @@ Width: {Width}
             if type(IG) is str:
                 iglist.append(IG)
             else:
-                iglist = IG 
+                iglist = IG
         if date:
             for IG in self.Omissions.keys():
                 if date in IG.split():
@@ -683,10 +683,5 @@ Width: {Width}
             self.Igrams[IG] = self.Omissions[IG]
             del self.Omissions[IG]
         self.setup() #re-run setup() routine without ommitted files
-        print('Returning the following interferograms:')        
+        print('Returning the following interferograms:')
         print('\n'.join(iglist))
-
-
-
-
-        
