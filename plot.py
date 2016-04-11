@@ -507,14 +507,14 @@ def browseSet(Set, convert2cm=False, units=None):
     sIG.set_val(0)
 
 
-def browse3(Timeseries, prefix1='Def', prefix2='MskDef', prefix3='RmpMskDef'):
+def browse(Timeseries):
     """Browse through 3 products simultaneously """
     self = Timeseries.Set
     pair = str(self.Pairs[0][0]) + ' ' + str(self.Pairs[0][1])
     ig = self.Igrams[pair]
     #ig = self.Igrams.values()[0]
     #dates = ig.Rsc['PAIR']
-    name = ig.Name
+    #name = ig.Name
     data = tools.load_half(ig,2)
     
     # Make plot window with slider to scan through IGs
@@ -565,145 +565,73 @@ def browse3(Timeseries, prefix1='Def', prefix2='MskDef', prefix3='RmpMskDef'):
     fig.canvas.mpl_connect('key_press_event', onpress)
     sIG.on_changed(update)
     sIG.set_val(0)
+   
 
-    
-    
-#NOTE: these routines are all slight variations on browseSet...
-# consolidate into single routine
-'''
-def browseTimeseries(Timeseries, prefix=''):
-    """Make a matplotlib window with a slider to quickly browse through IGs
-    IGs must be in .bin binary format output by matlab"""
-    # Load 3 arrays into memory at a time? (previous, current, next)
-    self = Timeseries
-    dates = self.Set.Pairs[0]
-    ig = self.Set.Igrams[dates]
-    name = prefix + '_Data_' + ig.Name[:-3] + 'npy'
-    phsFile = os.path.join(self.ProcDir, name)
-    data = np.load(phsFile)
-    
-    # Make plot window with slider to scan through IGs
-    fig = plt.figure()
-    fig.suptitle(os.path.dirname(ig.Path) + os.path.sep + prefix, fontsize=14, fontweight='bold')
-    ax = plt.subplot(111)
-    plt.subplots_adjust(left=0.25, bottom=0.25)
-    ax.set_title(dates)
-    im = plt.imshow(data, origin='lower',cmap=plt.cm.jet)
-    cb = plt.colorbar()
 
-    # Platform-independent Slider to go through IGs
-    axcolor = 'lightgoldenrodyellow'
-    axIG = plt.axes([0.25, 0.1, 0.65, 0.03], axisbg=axcolor)
-    sIG = Slider(axIG,
-                'IG#',
-                0,
-                len(self.Set.Pairs)-1,
-                #valinit=0, set at end of function
-                valfmt='%i',
-                closedmin=True,
-                closedmax=True,
-                dragging=True)
-
-    def update(val):
-        dates = self.Set.Pair[int(sIG.val)]
-        name = prefix + '_Data_' + self.Set.Igrams[dates].Name[:-3] + 'npy'
-        phsFile = os.path.join(self.ProcDir, name)
-        data = np.load(phsFile)
-        im.set_data(data)
-        im.autoscale() # autoscale colorbar to new data
-        ax.set_title(dates)
-        plt.draw()
-
-    def onpress(event):
-        if event.key not in ('n', 'p'): return
-        if event.key=='n':
-            newval = sIG.val + 1
-        else:
-            newval = sIG.val - 1
-        if newval < sIG.valmin: newval = sIG.valmax
-        if newval > sIG.valmax: newval = sIG.valmin
-        sIG.set_val(newval) # update() automatically called
-
-    fig.canvas.mpl_connect('key_press_event', onpress)
-    sIG.on_changed(update)
-    sIG.set_val(0) #necessary to count correctly
-'''
-
-'''
-def browseRamps(Timeseries,prefix1='MskDef',prefix2='ramp',prefix3='RmpMskDef',
-                signalmask='mask.npy'):
-    """ Show ramps removed from interferograms"""
-    #NOTE: can make this a whole lot cleaner!!!
+def browse3_new(Timeseries,prefix1='d_',prefix2='ramp_',prefix3='rd_'):
+    """ Plot two arrays with imshow, keep the same colorbar for each, third
+    array has it's own colorbar scale (eg. for residual)"""
+    print('use arrow keys to toggle back and forth')
     # Make plot window with slider to scan through IGs
     #print 'changed'
     self = Timeseries.Set
     dates = self.PairsString[0]
     ig = self.Igrams[dates]
-    data = tools.load_binary_old(Timeseries, ig, prefix=prefix1)
-    synthetic = tools.load_binary_old(Timeseries,ig, prefix=prefix2)
-    residual = tools.load_binary_old(Timeseries,ig, prefix=prefix3)  
-    if signalmask:    
-        custommask = np.load(signalmask)
-        signal = (custommask==1)
-        data[signal] = np.nan
-    indGood = np.isfinite(data)
-    ave = np.mean(data[indGood])
     
-    fig = plt.figure(figsize=(11,8))
-    bigtitle = fig.suptitle('{}\nmean={:.3f}'.format(dates,ave), fontsize=14, fontweight='bold')
+    #data = tools.load_binary_old(Timeseries, ig, prefix=prefix1)
+    #synthetic = tools.load_binary_old(Timeseries,ig, prefix=prefix2)
+    #residual = tools.load_binary_old(Timeseries,ig, prefix=prefix3)
+    data = np.load(Timeseries.RunDir +'/'+ prefix1 + ig.Name[:-3] + 'npy')
+    synthetic = np.load(Timeseries.RunDir +'/'+ prefix2 + ig.Name[:-3] + 'npy')
+    residual = np.load(Timeseries.RunDir + '/'+ prefix3 + ig.Name[:-3] + 'npy')
+    
+    cmap = 'viridis'
+    
+    fig = plt.figure(figsize=(11,8.5))
+    bigtitle = fig.suptitle(dates, fontsize=14, fontweight='bold')
     ax1 = fig.add_subplot(131)
     #ax1.subplots_adjust(left=0.25, bottom=0.25)
     ax1.set_title(prefix1)
-    im1 = plt.imshow(data,cmap=plt.cm.jet)
+    im1 = plt.imshow(data, cmap=cmap)
     cb1 = fig.colorbar(im1)
 
     ax2 = fig.add_subplot(132)
     ax2.set_title(prefix2)
-    im2 = ax2.imshow(synthetic,cmap=plt.cm.jet)
+    im2 = ax2.imshow(synthetic,cmap=cmap)
     # Set the same colorscale bounds as im1
     #norm = mpl.colors.Normalize(vmin=data[np.isfinite(data)].min(),
     #                            vmax=data[np.isfinite(data)].max())
     #im2.set_norm(cb1.norm) #alternative to manually accessing norm as above
     fig.colorbar(im2)
+
     ax3 = fig.add_subplot(133)
     ax3.set_title(prefix3)
-    im3 = ax3.imshow(residual,cmap=plt.cm.jet)
+    im3 = ax3.imshow(residual,cmap=cmap)
     im3.set_norm(cb1.norm)
     fig.colorbar(im3)
 
     # Platform-independent Slider to go through IGs
     axcolor = 'lightgoldenrodyellow' # other options?
     axIG = plt.axes([0.25, 0.015, 0.65, 0.03], axisbg=axcolor)
-    sIG = Slider(axIG,
-                 label='IG#',
-                 valmin=0,
-                 valmax=len(self.Pairs)-1,
-                 #valinit=0,#set this instead to get numbering right
-                 valfmt='%i',
-                 closedmin=True,
-                 closedmax=True,
-                 dragging=True)
-    
+    sIG = Slider(axIG, 'IG#', 0, len(self.Pairs), valinit=0, valfmt='%i',
+                 closedmin=True, closedmax=True, dragging=True)
     #print dir(sIG)
     def update(val):
         val = int(val)
-        #print 'in update' #print statements aren'y written to terminal until next update() call
-        dates = self.PairsString[val]
+        dates = str(self.Pairs[val][0]) + ' ' + str(self.Pairs[val][1]) #just take pairsstring?
         ig = self.Igrams[dates]
-        #print ig
-            
-        data = tools.load_binary_old(Timeseries, ig, prefix=prefix1)
-        synthetic = tools.load_binary_old(Timeseries, ig, prefix=prefix2)
-        residual = tools.load_binary_old(Timeseries, ig, prefix=prefix3)
-        if signalmask:    
-            custommask = np.load(signalmask)
-            signal = (custommask==1)
-            data[signal] = np.nan
-        indGoodMsk = np.isfinite(data)
-        ave = np.mean(data[indGoodMsk])
+        #ig = self.Igrams.values()[sIG.val-1]
+        #dates = ig.Rsc['PAIR']
+        #data = tools.load_half(ig,2)
         
-        indGoodRmp = np.isfinite(residual)
-        synthetic[~indGoodRmp] = np.nan #set ramp to nans to just look at 
+        #dates = self.PairsString[val]
+        #print dates
+        #ig = self.Igrams[dates]
+        #print ig
+
+        data = np.load(Timeseries.RunDir +'/'+ prefix1 + ig.Name[:-3] + 'npy')
+        synthetic = np.load(Timeseries.RunDir +'/'+ prefix2 + ig.Name[:-3] + 'npy')
+        residual = np.load(Timeseries.RunDir + '/'+ prefix3 + ig.Name[:-3] + 'npy')
         
         im1.set_data(data)
         im2.set_data(synthetic)
@@ -714,28 +642,29 @@ def browseRamps(Timeseries,prefix1='MskDef',prefix2='ramp',prefix3='RmpMskDef',
         im1.autoscale() # autoscale colorbar to new data
         #im2.set_norm(norm) #match synthetic colorbar with Rmp
         im2.autoscale()
-        #im3.autoscale()
-        im3.set_norm(norm)
-        bigtitle.set_text('{}\nmean={:.3f}'.format(dates,ave))
+        im3.autoscale()
+        #im3.set_norm(norm)
+        bigtitle.set_text(dates)
         #ax2.set_title(self.Pairs[int(sIG.val)-1])
         plt.draw()
         
     def onpress(event):
-        #print 'in onpress'
-        if event.key not in ('n', 'p'): return
-        if event.key=='n':
-            newval = sIG.val + 1
-        else:
-            newval = sIG.val - 1
+        if event.key not in ('right', 'left'): return
+        if event.key=='right': newval = sIG.val + 1
+        else:  newval = sIG.val - 1
+        
         if newval < sIG.valmin: newval = sIG.valmax
         if newval > sIG.valmax: newval = sIG.valmin
-        #print newval
         sIG.set_val(newval) # update() automatically called
     
     fig.canvas.mpl_connect('key_press_event', onpress)
     sIG.on_changed(update)
     sIG.set_val(0)
-''' 
+    #plt.show()
+    
+  
+
+  
 
 
 def browse3_old(Timeseries,prefix1='Def',prefix2='MskDef',prefix3='RmpMskDef'):
@@ -823,6 +752,7 @@ def browse3_old(Timeseries,prefix1='Def',prefix2='MskDef',prefix3='RmpMskDef'):
     sIG.on_changed(update)
     sIG.set_val(0)
     #plt.show()
+
 
 def igrams_sharing_date(ts, date, nrow=1, prefix='RmpMskDef', cbar='each',
                 normalize=True, ylabeldate=True, fwidth=17.0, fheight=11.0,
