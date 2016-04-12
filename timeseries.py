@@ -1,7 +1,7 @@
 """
 SBAS-like timeseries code in python
 """
-
+import pandas as pd
 import os
 import pickle
 import numpy as np
@@ -47,6 +47,7 @@ class Timeseries():
         self.MaskCothresh = True
         self.RampRemove = True
         self.Inversion = 'svd' # 'ls','wdls'
+        self.create_dataframe()
     
     def __str__(self):
         message ='''
@@ -62,6 +63,25 @@ Length: {Length}
 Width: {Width}
 '''.format(self.RunDir, self.Set.Dates[0], self.Set.Dates[-1], **self.Set.__dict__)
         return message
+
+
+    def create_dataframe(self):
+        """
+        Main structure for processing is pandas data frame
+        """
+        igs = [ig for ig in self.Set]
+        ids = [ig.ID for ig in self.Set]
+        starts = [ig.Date1 for ig in self.Set]
+        ends = [ig.Date2 for ig in self.Set]
+        dts = [ig.Timespan for ig in self.Set]        
+        
+        self.df = pd.DataFrame(dict(pair=ids, 
+                                    date1=starts, 
+                                    date2=ends, 
+                                    span=dts, 
+                                    ig=igs))
+        
+
 
     def save_settings(self, outfile='settings.p'):
         """Save timeseries settings to input file"""
@@ -117,7 +137,37 @@ Width: {Width}
             np.save(maskname, nans)
     
     
-    def stack(Timeseries, remove_ramp='linear', signalmask='mask.npy'):
+    def save_summary(self):
+        """
+        save a couple summary files with info on files used in stack
+        """
+        #getting number of unique dates from data frame
+        d1 = self.df.date1.apply(lambda x: x.toordinal()).values     
+        d2 = self.df.date2.apply(lambda x: x.toordinal()).values
+        n_dates = np.unique(np.concatenate([d1,d2])).size
+        
+        track = self.Set.Track
+        n_igs = self.df.shape[0]  
+        first_date = self.df.date2.min()
+        last_date = self.df.date1.max()
+        span = last_date - first_date
+        span_yr = span.days / 365.25
+        with open(self.OutDir + '/summary.txt', 'w') as f:
+            f.write("""{} Stack Summary:\n----------------
+# Interferograms = {}
+# Dates = {}
+First Date = {}
+Last Date = {}
+Span Years = {}
+Ramp Removal = {}
+""".format(track, n_igs, n_dates, first_date, last_date, span_yr, self.Ramp)
+)
+        # Also save csv file with information of files used in stack:
+        # Weird things happening here!
+        self.df.to_csv(self.OutDir +'/' + track + '.csv')
+    
+    
+    def stack(self, remove_ramp='linear', signalmask='mask.npy'):
         """
         Do a simple stack of a directory of rect_unw interferograms with associated
         msk files used to crop noisy pixels. Date range is a tuple of beginning
@@ -131,10 +181,13 @@ Width: {Width}
         NOTE: careful with saving path names, also, may not want to save if file sizes are large?
         """
 
-        self = Timeseries
+        #self = Timeseries
         datatype = np.dtype('<f4')
         width = self.Set.Width
         length = self.Set.Length
+        
+        # Keep record of ramp removal
+        self.Ramp = remove_ramp
         
         cumTime = np.zeros((length,width), dtype=datatype)
         cumDef = np.zeros((length,width), dtype=datatype)
@@ -142,7 +195,8 @@ Width: {Width}
         if signalmask:    
             signal = np.load(signalmask)
     
-        for ig in self.Set:
+        # Load only data if in self.df (in case weird scenes omitted)
+        for ig in self.df.ig:
             data = np.load(ig.ProcName)
             indGood = -np.isnan(data) # Assumes no special mask (e.g. coherence etc.)
             
@@ -458,14 +512,12 @@ Width: {Width}
         print('Done')
     
     
-    def omit(self, date=None, IG=None):
-        """ Convenience Method, Identical to Set.omit(IG=igList)"""
-        self.Set.omit(date=date, IG=IG)
+    def omit(self, index_list):
+        """ List of pandas dataframe indices to omit from stack"""
+        self.df_orig = self.df.copy()        
+        self.df = self.df.drop(self.df.index[index_list])        
+        #self.Set.omit(date=date, IG=IG)
     
-    
-    def remit(self, date=None, IG=None):
-        """ Convenience method to Set.remit(IG=igList)"""
-        self.Set.remit(date=date, IG=IG)
     
     
     def filter_baselines(self, minBperp=130, listFile=None):
