@@ -28,11 +28,11 @@ def mogi_viscoshell(xoff=0,yoff=0,d=4e3,a=1000.0,b=1200.0,dP=100e6,mu=30e9,
     ax = fig.add_subplot(211)
     uzmax = np.zeros(5)
     for i,tn in enumerate(times):
-        #print tn
+        #print(tn)
         t = tn * tR
         ur,uz = m.calc_mogi_viscoshell(x,y,t,xoff,yoff,d,a,b,dP,mu,nu,eta)
         plt.plot(x/d, uz/norm, label=str(tn))
-        #print uz.max()
+        #print(uz.max())
         uzmax[i+1] = uz.max()
     #for segall reproduction
     plt.xlim(0,3)
@@ -43,7 +43,7 @@ def mogi_viscoshell(xoff=0,yoff=0,d=4e3,a=1000.0,b=1200.0,dP=100e6,mu=30e9,
     plt.grid(True)
     
     ax = fig.add_subplot(212)
-    #print uzmax
+    #print(uzmax)
     plt.plot([0,0,1,3,10],uzmax/norm,'b.-')
     #to reproduce segall figure with b/a=1.2
     plt.xlim(-0.25,3)
@@ -280,21 +280,122 @@ def mctigue():
     plt.show()
     
     
-
-    
-    
 def okada():
     """
-    TODO
+    From script converted from matlab
     """
-    print 'work in progress'
+    # Set parameters
+    params = dict(xoff=0, yoff=0,
+            depth=5e3, length=1e3, width=1e3, 
+            slip=0.0, opening=10.0, 
+            strike=0.0, dip=0.0, rake=0.0,
+            nu=0.25)
+    
+    # Make grid NOTE: odd number so that center is symmetrical
+    n = 201
+    x = np.linspace(-25e3,25e3,n)
+    y = np.linspace(-25e3,25e3,n)
+    X,Y = np.meshgrid(x,y)
+
+    #ux,uy,uz = m.okada.calc_okada(**params)
+    ux,uy,uz = m.okada.forward(X,Y,**params)
+    
+    # resample grid for quiver plot
+    nx = ny = 10
+    
+    plt.figure()
+    im = plt.imshow(uz, extent=[-25, 25, -25, 25])
+    plt.quiver(X[::nx, ::ny]/1e3, Y[::nx, ::ny]/1e3, 
+               ux[::nx, ::ny], uy[::nx, ::ny],
+                units='x', color='w')
+    plt.title('Okada profiles')
+    plt.xlabel('Easting [km]')
+    plt.ylabel('Northing [km]')
+    cb = plt.colorbar(im)
+    cb.set_label('Vertical Deformation [m]')
+    
+    # make sure profile looks OK
+    plt.figure()
+    mid = int(n/2)
+    plt.plot(x/1e3,uz[:,mid], label='vertical')
+    plt.plot(x/1e3,uy[:,mid], label='ux')
+    plt.plot(x/1e3,ux[mid,:], 'ro', label='uy', markevery=3)
+    plt.axhline(color='k')
+    plt.axvline(color='k')
+    #plt.axhline(0.5, color='k', linestyle='dashed')
+    plt.ylabel(' Deformation [m]')
+    plt.legend()
+    
+    return ux, uy, uz
+    
+'''
+def okada_fialko():
+    """
+    Unfortunately Segall Ch3 figures don't list all parameters,
+    can instead use dMODELS matlab code (2013) or presentation from T Wright
+    
+    U, x, y, nu, delta, d, length, W, fault_type, strike, tp)
+    """
+    # Set parameters
+    params = dict(U = -10.0, # opening [m] NOTE: negative
+                  #xoff = -1e3, # offset
+                  #yoff = 0, # offset
+                  nu = 0.25, # poisson ratio
+                  delta = 0.001, # dip angle (set very close to zero to avoid numerical issue)
+                  d = 5e3,  # depth to bottom [m]
+                  length = 2e3, # [m]
+                  W = 2e3, #width [m]
+                  fault_type = 3, #opening [bool]
+                  strike = 0.0, #[degrees]
+                  tp = 0.0 #topo vector [m] 
+                  )
+    
+    # Make grid NOTE: odd number so that center is symmetrical
+    n = 201
+    x = np.linspace(-25e3,25e3,n)
+    y = np.linspace(-25e3,25e3,n)
+    X,Y = np.meshgrid(x,y)
+    params['x'] = X -1e3
+    params['y'] = Y
+
+    ux,uy,uz = m.okada.calc_okada(**params)
+    #ux,uy,uz = m.okada.calc_okada_sill(**params)
+    
+    # resample grid for quiver plot
+    nx = ny = 10
+    
+    plt.figure()
+    im = plt.imshow(uz, extent=[-25, 25, -25, 25])
+    plt.quiver(X[::nx, ::ny]/1e3, Y[::nx, ::ny]/1e3, 
+               ux[::nx, ::ny], uy[::nx, ::ny],
+                units='x', color='w')
+    plt.title('Okada profiles')
+    plt.xlabel('Easting [km]')
+    plt.ylabel('Northing [km]')
+    cb = plt.colorbar(im)
+    cb.set_label('Vertical Deformation [m]')
+    
+    # make sure profile looks OK
+    plt.figure()
+    mid = int(n/2)
+    plt.plot(x/1e3,uz[:,mid], label='vertical')
+    plt.plot(x/1e3,uy[:,mid], label='ux')
+    plt.plot(x/1e3,ux[mid,:], label='uy')
+    plt.axhline(color='k')
+    plt.axvline(color='k')
+    #plt.axhline(0.5, color='k', linestyle='dashed')
+    plt.ylabel(' Deformation [m]')
+    plt.legend()
+    
+    return ux, uy, uz
+'''
     
     
 def fialko():
     """
     TODO
     """
-    print 'work in progress'
+    print('work in progress')
     
     
 # ==================
@@ -380,13 +481,14 @@ def mctigue_profiles(dz1,dr1,dz2,dr2, x, depth=3e3):
 
 
 if __name__ == '__main__':
-    print 'Runnning all benchmarks'
-    mogi()
-    mctigue()
-    mogi_linmax()
-    mogi_genmax()
-    mogi_viscoshell()
-    print 'Done!'
+    print('Runnning all benchmarks')
+    #mogi()
+    #mctigue()
+    #mogi_linmax()
+    #mogi_genmax()
+    #mogi_viscoshell()
+    ux, uy, uz = okada()
+    print('Done!')
     
     
     
