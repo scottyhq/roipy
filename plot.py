@@ -10,9 +10,9 @@ from matplotlib.widgets import Slider
 from matplotlib.offsetbox import AnchoredText
 
 try:
-	from mpl_toolkits.basemap import Basemap, cm
+    from mpl_toolkits.basemap import Basemap, cm
 except:
-	print('Matplotlb Basemap required for map plots')
+    print('Matplotlb Basemap required for map plots')
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.lines import Line2D
@@ -55,21 +55,21 @@ def pig(Interferogram, array=2, title='', units='radar', cunits='phase', ax=None
     cunits = 'phase', 'cm'
     """
     self = Interferogram
-    
+
     if cunits == 'cm':
         convert = True
     else:
         convert = False
-        
+
     data = tools.load_half(self,array, convert2cm=convert)
-    
+
     if ax==None:
         fig = plt.figure()
         ax = fig.add_subplot(111)
-    
+
     im = ax.imshow(data,cmap=plt.cm.jet)
     cb = plt.colorbar(im)
-    
+
     if units == 'km':
         maxx = self.Width * self.col2km
         maxy = self.Length * self.row2km
@@ -77,51 +77,51 @@ def pig(Interferogram, array=2, title='', units='radar', cunits='phase', ax=None
         # maintain pixel aspect ratio
         #ax.set_aspect(self.Length/self.Width)
         #ax.autoscale_view(scalex=False, scaley=False)
-        
+
     plt.xlabel('range ({})'.format(units))
     plt.ylabel('azimuth ({})'.format(units))
     plt.title(title)
     cb.set_label(cunits)
     plt.show()
-    
+
     return cb
 
 
 def pcolor(array, title='', ig=None, units='pixels', cmap='jet', ax=None):
-	""" display a colormap of an interferogram. If units='km', use RANGE_PIXEL_SIZE
-	and AZIMUTH_PIXEL_SIZE in the .rsc to scale the display"""
-	#print title, units, ax
-	if ax==None:
-		fig = plt.figure()
-	
-	#http://matplotlib.org/examples/color/colormaps_reference.html
-	# for insar, best use RdBu_r, bwr, seismic (each differ just in terms of extreme saturation val 
-	im = plt.imshow(array, cmap=plt.get_cmap(cmap)) 
-	cb = plt.colorbar()
-	if title:
-		plt.title(title)
-	if units == 'km':
-		maxx = ig.Width * ig.col2km
-		maxy = ig.Length * ig.row2km
-		im.set_extent((0,maxx,0,maxy))
-	
-	plt.xlabel('range ({})'.format(units))
-	plt.ylabel('azimuth ({})'.format(units))
-	plt.title(title)
-	#cb.set_label('dLOS (cm)') #not necessarily... can also plot dems etc
-	plt.show()  
+    """ display a colormap of an interferogram. If units='km', use RANGE_PIXEL_SIZE
+    and AZIMUTH_PIXEL_SIZE in the .rsc to scale the display"""
+    #print title, units, ax
+    if ax==None:
+        fig = plt.figure()
+
+    #http://matplotlib.org/examples/color/colormaps_reference.html
+    # for insar, best use RdBu_r, bwr, seismic (each differ just in terms of extreme saturation val
+    im = plt.imshow(array, cmap=plt.get_cmap(cmap))
+    cb = plt.colorbar()
+    if title:
+        plt.title(title)
+    if units == 'km':
+        maxx = ig.Width * ig.col2km
+        maxy = ig.Length * ig.row2km
+        im.set_extent((0,maxx,0,maxy))
+
+    plt.xlabel('range ({})'.format(units))
+    plt.ylabel('azimuth ({})'.format(units))
+    plt.title(title)
+    #cb.set_label('dLOS (cm)') #not necessarily... can also plot dems etc
+    plt.show()
 
 
 
 def pcolor_ma(dataFile, maskFile=None):
     """load separate data and mask and plot"""
     data = np.load(dataFile)
-    mask = np.load(maskFile)             
+    mask = np.load(maskFile)
     maskArray = ma.array(data, mask=mask)
     fig = plt.figure()
     im = plt.imshow(maskArray,origin='lower',cmap=plt.cm.jet)
     cb = plt.colorbar()
-    
+
 
 def plot_components(ux,uy,uz,ulos,n=10,cmode='each', cloc='right'):
     """ 'n' is number of pixels per quiver arrow """
@@ -145,12 +145,12 @@ def plot_components(ux,uy,uz,ulos,n=10,cmode='each', cloc='right'):
     #ur = np.hypot(ux,uy)
     #uy = fix_uy(ux,uy,ur,uz)
     #datas = [uz,ur,ux,uy]
-    
+
     datas = [ulos,uz,ux,uy]
     titles = ['LOS', 'Vertical', 'East-West', 'North-South' ]
     master = Normalize(-1,1)
     #for ax,data,title,clim in zip(grid,datas,titles,clims):
-    for ax,data,title in zip(grid,datas,titles):   
+    for ax,data,title in zip(grid,datas,titles):
         #ax = grid[i]
         im = ax.imshow(data, cmap=plt.cm.jet)
         #im = ax.imshow(data, cmap=plt.cm.jet, vmin=clim[0],vmax=clim[1])
@@ -163,19 +163,19 @@ def plot_components(ux,uy,uz,ulos,n=10,cmode='each', cloc='right'):
         #cmax = data[np.isfinite(data)].max()
         #print cmin, cmax
         #ax.cax.set_xticks([int(cmin),0,int(cmax)])
-        
+
         #Annotate
         #title = titles[i]
         at = AnchoredText(title,prop=dict(size=10,weight='bold'), frameon=True, loc=9) #upper center
         at.patch.set_boxstyle("round, pad=0.0, rounding_size=0.2")
         ax.add_artist(at)
-        
-        
+
+
     if cmode == 'single':
         ax.cax.colorbar(im)
-    
+
     # Plot arrows
-    #ax = grid[1] 
+    #ax = grid[1]
     #ax.quiver(C[::n,::n], R[::n,::n], ux[::n,::n], uy[::n,::n], pivot='mid') #radial
     ax = grid[2]
     ax.quiver(C[::n,::n], R[::n,::n], ux[::n,::n], Z[::n,::n], pivot='mid') #EW
@@ -192,15 +192,15 @@ def clim(fig=1, subplot=0, vmin=-1, vmax=1):
     plt.sca(ax)
     plt.sci(ax.images[0])
     plt.clim((vmin,vmax))
-    
- 
+
+
 def variogram(Interferogram, array=None):
     """ Plot the variogram for an array """
     self = Interferogram
     if array == None:
         phs = rp.tools.load_half(2)
- 
- 
+
+
 def correlate(pixX=None, pixY=None, rows=None, fit_order=None, ax=None,
               one2one=False, showeq=False, showr2=False, ms=0.5, markevery=1,
               minX=None):
@@ -223,27 +223,27 @@ def correlate(pixX=None, pixY=None, rows=None, fit_order=None, ax=None,
     vecX = pixX.flatten()
     vecY = pixY.flatten()
     masked = np.isnan(vecX) + np.isnan(vecY) # Mask NaN values
-    
+
     if minX:
         masked += (vecX < minX)
-    
+
     vecX = vecX[~masked]
     vecY = vecY[~masked]
-    
+
     line_points = ax.plot(vecX,vecY,'k.',markersize=ms, markevery=markevery)
     #ax.set_title('DEM vs Phase Plot', fontsize=14, fontweight='bold')
     #ax.set_xlabel('Phase')
     #ax.set_ylabel('DEM height (m)')
     #plt.hold(True)
-    
+
     # Plot 1:1 line
     if one2one:
         xmin,xmax = ax.get_xlim()
         points = np.linspace(xmin,xmax,20)
         one2one = ax.plot(points,points,'b-',label='1:1') #NOTE:add legend
-    
+
     # Plot best-fit line
-    if fit_order: 
+    if fit_order:
         slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(vecX,vecY)
         coef = (slope,intercept)
         rsq = r_value**2
@@ -254,20 +254,20 @@ def correlate(pixX=None, pixY=None, rows=None, fit_order=None, ax=None,
         line_fit = ax.plot(points,fit(points),'-')
         if showeq: # Display linear fit equation
             text = 'y = %.4fx + %.4f' % (coef[0],coef[1])
-            ax.text(0.2, 0.90, text, 
+            ax.text(0.2, 0.90, text,
                 horizontalalignment='left',
                 verticalalignment='center',
-                transform = ax.transAxes) 
+                transform = ax.transAxes)
         if showr2:
             text = r'$R^2 = {:.2f} $'.format(rsq)
-            ax.text(0.2, 0.95, text, 
+            ax.text(0.2, 0.95, text,
                 horizontalalignment='left',
                 verticalalignment='center',
-                transform = ax.transAxes) 
-            
+                transform = ax.transAxes)
+
     plt.draw()
 
-    
+
 def geo_correlate(arrayX, arrayY, order=1):
     """DEPRECATED:  just use correlate()Pass cropped arrays on same grid from gmtsample() output. ideally arrays
     should have already been converted from LOS to Vertical"""
@@ -305,14 +305,14 @@ def geo_correlate(arrayX, arrayY, order=1):
     xmin,xmax = ax.get_xlim()
     points = np.linspace(xmin,xmax,20)
     one2one = ax.plot(points,points,'b-',label='one2one')
-    
+
     # Plot best-fit line
     '''
-    if order: 
+    if order:
         slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(vecX,vecY)
         fit_sp = np.poly1d(slope,intercept)
         line_fit = ax.plot(points,fit_sp(points),'b--',label='scipy fit')
-        ax.text(0.95, 0.9, str(r_value), 
+        ax.text(0.95, 0.9, str(r_value),
                 horizontalalignment='right',
                 verticalalignment='center',
                 transform = ax.transAxes)
@@ -322,31 +322,31 @@ def geo_correlate(arrayX, arrayY, order=1):
 
 
 def side_by_side_old(array1, array2, array3, fixCaxis=True):
-	""" DEPRECATED Plot two arrays with imshow, keep the same colorbar for each, third
-	array has it's own colorbar scale (eg. for residual)"""
-	origin = 'upper'
-	fig = plt.figure()
-	ax1 = fig.add_subplot(131)
-	ax1.set_title('Rmp')
-	im1 = ax1.imshow(array1,origin=origin,cmap=plt.cm.jet)
-	fig.colorbar(im1)
-	
-	ax2 = fig.add_subplot(132)
-	ax2.set_title('Synthetic')
-	im2 = ax2.imshow(array2,origin=origin,cmap=plt.cm.jet)
-	
-	if fixCaxis:
-		# Set the same colorscale bounds as im1
-		norm = mpl.colors.Normalize(vmin=np.nanmax(array1), vmax=np.nanmax(array1))
-	im2.set_norm(norm) 
-	fig.colorbar(im2)
-	
-	ax3 = fig.add_subplot(133)
-	ax3.set_title('Residual')
-	im3 = ax3.imshow(array3,origin=origin,cmap=plt.cm.jet)
-	fig.colorbar(im3)
-	
-	plt.draw()
+    """ DEPRECATED Plot two arrays with imshow, keep the same colorbar for each, third
+    array has it's own colorbar scale (eg. for residual)"""
+    origin = 'upper'
+    fig = plt.figure()
+    ax1 = fig.add_subplot(131)
+    ax1.set_title('Rmp')
+    im1 = ax1.imshow(array1,origin=origin,cmap=plt.cm.jet)
+    fig.colorbar(im1)
+
+    ax2 = fig.add_subplot(132)
+    ax2.set_title('Synthetic')
+    im2 = ax2.imshow(array2,origin=origin,cmap=plt.cm.jet)
+
+    if fixCaxis:
+        # Set the same colorscale bounds as im1
+        norm = mpl.colors.Normalize(vmin=np.nanmax(array1), vmax=np.nanmax(array1))
+    im2.set_norm(norm)
+    fig.colorbar(im2)
+
+    ax3 = fig.add_subplot(133)
+    ax3.set_title('Residual')
+    im3 = ax3.imshow(array3,origin=origin,cmap=plt.cm.jet)
+    fig.colorbar(im3)
+
+    plt.draw()
 
 
 def side_by_side(array1, array2, array3):
@@ -391,14 +391,14 @@ def showmap(path, half=2,dims=None, annotate=True, ax=None, vmin=None, vmax=None
     if ax==None:
         fig = plt.figure()
         ax = fig.add_subplot(111)
-    
+
     if path.endswith('unw'):
         geo = roipy.data.Geogram(path)
         geotrans = geo.Geotrans
         data = tools.load_half(geo,half=half)
     else:
         data, geotrans, proj = tools.load_gdal(path)
-    
+
     nLat, nLon = data.shape
     x0 = geotrans[0] #top left longitude
     dx = geotrans[1] #pixel width
@@ -408,7 +408,7 @@ def showmap(path, half=2,dims=None, annotate=True, ax=None, vmin=None, vmax=None
     dy = geotrans[5] #pixel height
     lowLeft = (x0, y0 + dy*nLat) #NOTE: make sure dy is correct sign
     upRight = (x0 + dx*nLon, y0)
-    
+
     # NOTE: 'cyl' projection implies (lon,lat) = (x,y), see Basemap docs otherwise
     bmap = Basemap(projection='cyl',
                 llcrnrlat=lowLeft[1],
@@ -430,17 +430,17 @@ def showmap(path, half=2,dims=None, annotate=True, ax=None, vmin=None, vmax=None
         #print lonVec
         #bmap.drawparallels(latVec,color='black',linewidth=1,dashes=[2,2],labels=[1,0,0,1],labelstyle='+/-',fmt='%.1f')
         #bmap.drawmeridians(lonVec,color='black',linewidth=1,dashes=[2,2],labels=[1,0,0,1],labelstyle='+/-',fmt='%.1f')
-        
+
         #Add colorbar
         #divider = make_axes_locatable(ax)
         #cax = divider.append_axes("right", size="5%", pad=0.05) #"top"
         #plt.colorbar(im, cax=cax)
         bmap.colorbar(im)
-        
+
     plt.show()
     return bmap
-    
-    
+
+
 # =============================================================================#
 # Requires ts instance
 # =============================================================================#
@@ -453,7 +453,7 @@ def browseSet(Set, convert2cm=False, units=None):
     #dates = ig.Rsc['PAIR']
     name = ig.Name
     data = tools.load_half(ig,2, convert2cm=convert2cm)
-    
+
     # Make plot window with slider to scan through IGs
     fig = plt.figure()
     fig.suptitle(os.path.dirname(ig.Path), fontsize=14, fontweight='bold')
@@ -462,7 +462,7 @@ def browseSet(Set, convert2cm=False, units=None):
     ax.set_title(pair)
     im = plt.imshow(data,cmap=plt.cm.jet)
     cb = plt.colorbar()
-    
+
     if units:
         cb.set_label(units)
 
@@ -516,7 +516,7 @@ def browse(Timeseries):
     #dates = ig.Rsc['PAIR']
     #name = ig.Name
     data = tools.load_half(ig,2)
-    
+
     # Make plot window with slider to scan through IGs
     fig = plt.figure()
     fig.suptitle(os.path.dirname(ig.Path), fontsize=14, fontweight='bold')
@@ -565,7 +565,7 @@ def browse(Timeseries):
     fig.canvas.mpl_connect('key_press_event', onpress)
     sIG.on_changed(update)
     sIG.set_val(0)
-   
+
 
 
 def browse3_new(Timeseries,prefix1='d_',prefix2='ramp_',prefix3='rd_'):
@@ -577,16 +577,16 @@ def browse3_new(Timeseries,prefix1='d_',prefix2='ramp_',prefix3='rd_'):
     self = Timeseries.Set
     dates = self.PairsString[0]
     ig = self.Igrams[dates]
-    
+
     #data = tools.load_binary_old(Timeseries, ig, prefix=prefix1)
     #synthetic = tools.load_binary_old(Timeseries,ig, prefix=prefix2)
     #residual = tools.load_binary_old(Timeseries,ig, prefix=prefix3)
     data = np.load(Timeseries.RunDir +'/'+ prefix1 + ig.Name[:-3] + 'npy')
     synthetic = np.load(Timeseries.RunDir +'/'+ prefix2 + ig.Name[:-3] + 'npy')
     residual = np.load(Timeseries.RunDir + '/'+ prefix3 + ig.Name[:-3] + 'npy')
-    
+
     cmap = 'viridis'
-    
+
     fig = plt.figure(figsize=(11,8.5))
     bigtitle = fig.suptitle(dates, fontsize=14, fontweight='bold')
     ax1 = fig.add_subplot(131)
@@ -623,7 +623,7 @@ def browse3_new(Timeseries,prefix1='d_',prefix2='ramp_',prefix3='rd_'):
         #ig = self.Igrams.values()[sIG.val-1]
         #dates = ig.Rsc['PAIR']
         #data = tools.load_half(ig,2)
-        
+
         #dates = self.PairsString[val]
         #print dates
         #ig = self.Igrams[dates]
@@ -632,11 +632,11 @@ def browse3_new(Timeseries,prefix1='d_',prefix2='ramp_',prefix3='rd_'):
         data = np.load(Timeseries.RunDir +'/'+ prefix1 + ig.Name[:-3] + 'npy')
         synthetic = np.load(Timeseries.RunDir +'/'+ prefix2 + ig.Name[:-3] + 'npy')
         residual = np.load(Timeseries.RunDir + '/'+ prefix3 + ig.Name[:-3] + 'npy')
-        
+
         im1.set_data(data)
         im2.set_data(synthetic)
         im3.set_data(residual)
-        
+
         norm = mpl.colors.Normalize(vmin=data[np.isfinite(data)].min(),
                                     vmax=data[np.isfinite(data)].max())
         im1.autoscale() # autoscale colorbar to new data
@@ -647,24 +647,24 @@ def browse3_new(Timeseries,prefix1='d_',prefix2='ramp_',prefix3='rd_'):
         bigtitle.set_text(dates)
         #ax2.set_title(self.Pairs[int(sIG.val)-1])
         plt.draw()
-        
+
     def onpress(event):
         if event.key not in ('right', 'left'): return
         if event.key=='right': newval = sIG.val + 1
         else:  newval = sIG.val - 1
-        
+
         if newval < sIG.valmin: newval = sIG.valmax
         if newval > sIG.valmax: newval = sIG.valmin
         sIG.set_val(newval) # update() automatically called
-    
+
     fig.canvas.mpl_connect('key_press_event', onpress)
     sIG.on_changed(update)
     sIG.set_val(0)
     #plt.show()
-    
-  
 
-  
+
+
+
 
 
 def browse3_old(Timeseries,prefix1='Def',prefix2='MskDef',prefix3='RmpMskDef'):
@@ -678,7 +678,7 @@ def browse3_old(Timeseries,prefix1='Def',prefix2='MskDef',prefix3='RmpMskDef'):
     data = tools.load_binary_old(Timeseries, ig, prefix=prefix1)
     synthetic = tools.load_binary_old(Timeseries,ig, prefix=prefix2)
     residual = tools.load_binary_old(Timeseries,ig, prefix=prefix3)
-    
+
     fig = plt.figure(figsize=(11,8))
     bigtitle = fig.suptitle(dates, fontsize=14, fontweight='bold')
     ax1 = fig.add_subplot(131)
@@ -715,19 +715,19 @@ def browse3_old(Timeseries,prefix1='Def',prefix2='MskDef',prefix3='RmpMskDef'):
         #ig = self.Igrams.values()[sIG.val-1]
         #dates = ig.Rsc['PAIR']
         #data = tools.load_half(ig,2)
-        
+
         #dates = self.PairsString[val]
         #print dates
         #ig = self.Igrams[dates]
         #print ig
-            
+
         data = tools.load_binary_old(Timeseries, ig, prefix=prefix1)
         synthetic = tools.load_binary_old(Timeseries, ig, prefix=prefix2)
         residual = tools.load_binary_old(Timeseries, ig, prefix=prefix3)
         im1.set_data(data)
         im2.set_data(synthetic)
         im3.set_data(residual)
-        
+
         norm = mpl.colors.Normalize(vmin=data[np.isfinite(data)].min(),
                                     vmax=data[np.isfinite(data)].max())
         im1.autoscale() # autoscale colorbar to new data
@@ -738,16 +738,16 @@ def browse3_old(Timeseries,prefix1='Def',prefix2='MskDef',prefix3='RmpMskDef'):
         bigtitle.set_text(dates)
         #ax2.set_title(self.Pairs[int(sIG.val)-1])
         plt.draw()
-        
+
     def onpress(event):
         if event.key not in ('n', 'p'): return
         if event.key=='n': newval = sIG.val + 1
         else:  newval = sIG.val - 1
-        
+
         if newval < sIG.valmin: newval = sIG.valmax
         if newval > sIG.valmax: newval = sIG.valmin
         sIG.set_val(newval) # update() automatically called
-    
+
     fig.canvas.mpl_connect('key_press_event', onpress)
     sIG.on_changed(update)
     sIG.set_val(0)
@@ -762,12 +762,12 @@ def igrams_sharing_date(ts, date, nrow=1, prefix='RmpMskDef', cbar='each',
     selections = row
     length = ts.Set.Length
     width = ts.Set.Width
-    
+
     igrams = float(selections.size)
     ncol = np.ceil(igrams/nrow).astype(np.int)
     fig = plt.figure(figsize=(fwidth,fheight))
     fig.suptitle('Interferograms with date={}'.format(date), fontsize=14, fontweight='bold')
-    
+
     grid = ImageGrid(fig, 111, # similar to subplot(111)
                     nrows_ncols = (nrow, ncol),
                     direction="row",
@@ -794,10 +794,10 @@ def igrams_sharing_date(ts, date, nrow=1, prefix='RmpMskDef', cbar='each',
         cmin = int(data[np.isfinite(data)].min())
         cmax = int(data[np.isfinite(data)].max())
         ax.cax.set_xticks([cmin,0,cmax])
-        
+
         if ylabeldate:
             ax.set_ylabel(ig.Rsc['DATE12'])
-        
+
         ax.text(0.9,0.95,str(ignum),
                 #weight='bold',
                 ha='right',
@@ -807,13 +807,13 @@ def igrams_sharing_date(ts, date, nrow=1, prefix='RmpMskDef', cbar='each',
 
         ax.tick_params(labelbottom=1,labeltop=0,labelleft=0,labelright=1,
                         bottom=1,top=1,left=1,right=1)
-    
+
     #don't show grid frames without data...
     Nextra = grid.ngrids - ts.Set.Nig
     if Nextra > 0:
         for ax in grid[-Nextra:]:
             #print axtop
-            
+
             ax.set_visible(False)
             ax.cax.set_visible(False)
 
@@ -838,7 +838,7 @@ def map_date_coverage(Timeseries, prefix='RmpMskDef', platform=None, ax=None):
     width = self.Set.Width
     length = self.Set.Length
     size = width*length
-    
+
     if platform == None:
         platform = '' #for plot titile
         iglist = self.Set.PairsString
@@ -852,7 +852,7 @@ def map_date_coverage(Timeseries, prefix='RmpMskDef', platform=None, ax=None):
         iglist = self.Set.query('PLATFORM', 'Envisat')
     ndates = len(iglist)
     print('{} total dates'.format(ndates))
-    
+
     #NOTE: old method, based on matlab output... more efficient, but hard to
     #distinguish ERS from Envisat
     #ndates = np.zeros((length,width),dtype=datatype)
@@ -860,7 +860,7 @@ def map_date_coverage(Timeseries, prefix='RmpMskDef', platform=None, ax=None):
     #cumdef = tools.load_mat(path, length, width)
     #ndates = np.sum(np.isfinite(cumdef),0) #ndates b npixels
     #ndates = np.reshape(ndates,(length,width),order='F')
-    
+
     # New method: make an array of lists... VERY SLOW, but works
     #NOTE: think of ways to speed this up!
     filler = np.frompyfunc(lambda x: list(), 1, 1)
@@ -873,16 +873,16 @@ def map_date_coverage(Timeseries, prefix='RmpMskDef', platform=None, ax=None):
         for pix in indGood:
             if ig.Rsc['DATE1'] not in dates[pix]:
                 dates[pix].append(ig.Rsc['DATE1'])
-            if ig.Rsc['DATE1'] not in dates[pix]: 
+            if ig.Rsc['DATE1'] not in dates[pix]:
                 dates[pix].append(ig.Rsc['DATE2'])
     len_func = np.frompyfunc(len,1,1)
     dqmap = len_func(dates)
     dqmap = np.reshape(dqmap,(length, width)).astype(int)
-    
+
     if ax == None:
         fig = plt.figure()
         ax = fig.add_subplot(111)
-    
+
     # Discretized colorbar b/c usually aren't too many dates
     #pcolor(dqmap, '{0} {1} Dates Per Pixel'.format(self.Set.Track, platform))
     discrete_jet = cmap_discretize(plt.cm.jet, ndates)
@@ -890,16 +890,16 @@ def map_date_coverage(Timeseries, prefix='RmpMskDef', platform=None, ax=None):
     cbar = fig.colorbar(im, ticks=list(range(ndates+1)))
     ax.set_title('{0} {1} Dates Per Pixel'.format(self.Set.Track, platform))
     plt.show()
-    
+
     return dqmap
 
 
 def cmap_discretize(cmap, N):
     """Return a discrete colormap from the continuous colormap cmap.
-    
-        cmap: colormap instance, eg. cm.jet. 
+
+        cmap: colormap instance, eg. cm.jet.
         N: Number of colors.
-    
+
     Example
         x = resize(arange(100), (5,100))
         djet = cmap_discretize(cm.jet, 5)
@@ -926,7 +926,7 @@ def cmap_discretize(cmap, N):
         for l in A:
             L.append(tuple(l))
         cdict[key] = tuple(L)
-    
+
     # Return colormap object.
     return mpl.colors.LinearSegmentedColormap('colormap',cdict,1024)
 
@@ -940,7 +940,7 @@ def map_interferogram_coverage(Timeseries, prefix='RmpMskDef', platform=None, ax
     width = self.Set.Width
     length = self.Set.Length
     dqmap = np.zeros((length,width),dtype=datatype)
-    
+
     if platform == None:
         platform = '' #for plot titile
         iglist = self.Set.PairsString
@@ -951,23 +951,23 @@ def map_interferogram_coverage(Timeseries, prefix='RmpMskDef', platform=None, ax
     elif platform == 'ERS2':
         iglist = self.Set.query('PLATFORM', 'ERS2')
     elif platform == 'Envisat':
-        iglist = self.Set.query('PLATFORM', 'Envisat') 
+        iglist = self.Set.query('PLATFORM', 'Envisat')
     print('{} total interferograms'.format(len(iglist)))
     for ig in iglist:
         data = tools.load_binary_old(self, self.Set.Igrams[ig], prefix=prefix)
         indGood = np.isfinite(data)
         dqmap += indGood
-    
+
     if ax == None:
         fig = plt.figure()
         ax = fig.add_subplot(111)
-    
+
     # Image with discrete colormap
     im = plt.imshow(dqmap,cmap=plt.cm.jet) #NOTE: what pcolor does
     ax.set_title('{0} {1} Interferograms Per Pixel'.format(self.Set.Track, platform))
     cb = plt.colorbar()
     plt.show()
-    
+
     return dqmap
 
 # NOTE: not working with current ipython --pylab...
@@ -976,12 +976,12 @@ def point_lasso(fignum=1,xd=None,yd=None):
     """ Get point coordinates by drawing a lasso around them... very cool """
     print 'Left-click to draw a boundary around points you want to isolate'
     sys.stdout.flush()
-    
+
     data = [Datum(*xy) for xy in np.random.rand(100, 2)]
     fig = plt.figure()
     ax = fig.add_subplot(111, xlim=(0,1), ylim=(0,1), autoscale_on=False)
     lman = LassoManager(ax, data)
-    
+
     #fig = plt.figure(fignum)
     #ax = fig.add_subplot(111, autoscale_on=False)
     #ax = fig.get_axes()[0] #assumes only 1 axes instance
@@ -997,12 +997,12 @@ def vmap_ginput(Timeseries, fignum=1):
     """ Interactively plot timeseries from a figure """
     fig = plt.figure(fignum)
     ax = fig.gca()
-    
+
     # Set up second figure for profiles
     fig2 = plt.figure()
     ax2 = fig2.add_subplot(111)
     ax2.set_title('Timeseries for pixel:')
-    
+
     done = False
     while not done:
         print('Select a timeseries point by left-clicking mouse on image')
@@ -1010,7 +1010,7 @@ def vmap_ginput(Timeseries, fignum=1):
         ax.plot(points[:,0],points[:,1],'k.',scalex=False,scaley=False)
         index = points[0][::-1] #extract tuple, swap order
         timeseries_separate(Timeseries, index=index, ax=ax2, annotate=True)
-        
+
         # tap any key to stop, mouse click selects a new point
         print('Left-click in image to continue, Press a key in the image to exit')
         done = plt.waitforbuttonpress()
@@ -1025,19 +1025,19 @@ def basemap_ginput(fignum, geofile, interp='nn',nsamp=500):
     sys.stdout.flush()
     fig = plt.figure(fignum)
     ax = fig.gca()
-    
+
     # Get user-selected points
     points = np.asarray(fig.ginput(2))
     start = points[0]
     end = points[1]
-    
+
     # Draw profile line on plot
     start=overlay['start']
     end=overlay['end']
-    ax.plot([start[0],end[0]], [start[1],end[1]], 'r.-') 
+    ax.plot([start[0],end[0]], [start[1],end[1]], 'r.-')
     ax.text(start[0],start[1],overlay['plabel'][0],fontsize=10, fontweight='bold')
     ax.text(end[0],end[1],overlay['plabel'][1],fontsize=10, fontweight='bold')
-    
+
     # Profile in separate plot
     fig2 = plt.figure()
     ax2 = fig.add_subplot(111)
@@ -1048,7 +1048,7 @@ def basemap_ginput(fignum, geofile, interp='nn',nsamp=500):
     y = np.linspace(y0, y1, length)
     print(x0,y0)
     zi = phase[y.astype(np.int), x.astype(np.int)] #check transpose?
-    
+
     # Plot profile w/ kilometers on x-axis
     length_km = latlon2range.latlon2range(start[1],start[0],end[1],end[0])
     x_km = np.linspace(0,length_km,zi.size)
@@ -1065,7 +1065,7 @@ def basemap_ginput(fignum, geofile, interp='nn',nsamp=500):
     #ax2.set_xlabel(r'$Distance$ (km)')
     if pLabel: ax2.set_ylabel('velocity (cm/yr)')
     ax2.set_xlabel('distance (km)')
-    
+
 
 
 def profile_ginput(fignum=None, interp='nn', nsamp=500, showline=True):
@@ -1074,7 +1074,7 @@ def profile_ginput(fignum=None, interp='nn', nsamp=500, showline=True):
     #NOTE: if georeferenced used latlon2range for axes in km?
     print('Select start and end points by left-clicking')
     sys.stdout.flush() #NOTE: ensures print statement shows up before function exits
-    
+
     if fignum == None:
         fig = plt.gcf()
     else:
@@ -1082,21 +1082,21 @@ def profile_ginput(fignum=None, interp='nn', nsamp=500, showline=True):
     ax = fig.gca()
     im = ax.get_images()[0]
     z = im.get_array()
-    
+
     # Have user select profile points
     points = np.asarray(fig.ginput(2))
     x = points[:,0]
     y = points[:,1]
-    
+
     # Draw profile line on plot
     if showline:
         start = points[0]
         end = points[1]
-        ax.plot([start[0],end[0]], [start[1],end[1]], 'k.-',scalex=0,scaley=0) 
+        ax.plot([start[0],end[0]], [start[1],end[1]], 'k.-',scalex=0,scaley=0)
         ax.text(start[0],start[1],"A",fontsize=14, fontweight='bold')
         ax.text(end[0],end[1],"A'",fontsize=14, fontweight='bold')
         plt.draw()
-    
+
     # Extract image values from the profile line
     #http://stackoverflow.com/questions/7878398/how-to-extract-an-arbitrary-line-of-values-from-a-numpy-array
     if interp == 'nn':
@@ -1105,18 +1105,18 @@ def profile_ginput(fignum=None, interp='nn', nsamp=500, showline=True):
         ysamp = np.linspace(y[0],y[1],length).astype(int)
         zsamp = z[ysamp, xsamp]
         ax.plot(xsamp,ysamp,'k.-',lw=2)
-        
+
     elif interp == 'cubic':
         xsamp = np.linspace(x[0],x[1],nsamp)
         ysamp = np.linspace(y[0],y[1],nsamp)
         zsamp = scipy.ndimage.map_coordinate(z,np.vstack((xsamp,ysamp)))
-    
+
     # Open a new figure with the profile
     #NOTE: would be nice to show distance
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.plot(zsamp,'k.-')
-    
+
     #label A & A'
     atL = AnchoredText("A",prop=dict(size=10,weight='bold'), frameon=True, loc=2)
     #atL.patch.set_boxstyle("round, pad=0.0, rounding_size=0.2")
@@ -1124,10 +1124,10 @@ def profile_ginput(fignum=None, interp='nn', nsamp=500, showline=True):
     atR = AnchoredText("A'",prop=dict(size=10,weight='bold'), frameon=True, loc=1)
     #atR.patch.set_boxstyle("round, pad=0.0, rounding_size=0.2")
     ax.add_artist(atR)
-    
+
     plt.title('profile')
     plt.show()
-    
+
     return (xsamp,ysamp,zsamp)
 
 
@@ -1141,8 +1141,8 @@ def profile(array, val, ax='x'):
         profile = array[:,val]
     else:
         plt.axhline(val,c='k')
-        profile = array[val,:] 
-    
+        profile = array[val,:]
+
     fig = plt.figure()
     plt.plot(profile,'b-',lw=2) #just show line, not points 'b.-' show points
     plt.axhline(0,c='k')
@@ -1151,7 +1151,7 @@ def profile(array, val, ax='x'):
     plt.xlabel('Pixel #')
     plt.grid()
     #plt.show()
-    
+
     # return datapoints!
     return profile
 
@@ -1164,27 +1164,27 @@ def profile_asterix(data, center=None, nprofiles=5, clim=None):
     im = plt.imshow(data,cmap=plt.cm.jet)
     cb = plt.colorbar()
     if clim:
-        plt.clim(clim)    
+        plt.clim(clim)
     plt.xlabel('col #')
     plt.ylabel('row #')
-    
+
     ax2 = fig.add_subplot(122)
     plt.axhline(0,c='k')
     plt.title('profiles')
     plt.ylabel('deformation')
     plt.xlabel('pixel')
-    
-    nrow, ncol = data.shape 
+
+    nrow, ncol = data.shape
     if center:
         r0, c0 = center
     else:
         r0 = nrow/2
         c0 = ncol/2
-        
+
     #profiles = {}
     #colors = ['b', 'g', 'r', 'c', 'm','y','k']
     slopes = np.linspace(0, np.pi, nprofiles)
-    for i,rad in enumerate(slopes[:-1]): #don't repeat 0 & pi    
+    for i,rad in enumerate(slopes[:-1]): #don't repeat 0 & pi
         # Add profile line to interferogram
         #print i, rad, colors[i]
         #special case division by zeros
@@ -1201,28 +1201,28 @@ def profile_asterix(data, center=None, nprofiles=5, clim=None):
             start = (0, leftIntercept)
             end = (ncol, rightIntercept)
         ax1.plot([start[0],end[0]], [start[1],end[1]], scalex=0, scaley=0)
-        
+
         # Add profile to adjacent plot
         #NOTE: mean, probably more representative
         length = np.floor(np.hypot(start[0]-end[0], start[1]-end[1]))  #sample each pixel line passes through
         cols = np.linspace(start[0], end[0]-1, length) #NOTE end-2 to make sure indexing works
         rows = np.linspace(start[1], end[1]-1, length)
-        
+
         # Radial-plot
         radii = np.hypot(cols-c0, rows-r0)
-        
+
         # East Positive (to check for E-W symmetry)
         if rad == np.pi/2: #special case for vertical profile
             radii[np.where(rows>r0)] *= -1
         else:
             radii[np.where(cols<c0)] *= -1
-        
+
         # North Positive
         #if rad == 0:
         #    radii[np.where(cols<c0)] *= -1
         #else:
         #    radii[np.where(rows>r0)] *= -1
-        
+
         # not sure why there are indexing errors:
         good = (rows <= data.shape[0]) & (cols <= data.shape[1])
         rows = rows[good]
@@ -1231,11 +1231,11 @@ def profile_asterix(data, center=None, nprofiles=5, clim=None):
         indcols = cols.astype(np.int)
         pPoints = data[indrows, indcols]
         ax2.plot(radii[good], pPoints, marker='.')
-        
+
     #ax1.plot(c0,r0, marker='s', mec='k', mew=2, mfc='none', scalex=0, scaley=0)
     ax1.plot(c0,r0,'ko', ms=2, scalex=0, scaley=0)
-        
-    
+
+
 
 def profile_swath(data, val, npix=3, ax=0):
     """
@@ -1247,27 +1247,27 @@ def profile_swath(data, val, npix=3, ax=0):
     nrow, ncol = data.shape
     fig = plt.figure(figsize=(11,8.5))
     #im = plt.imshow(data, cmap=plt.cm.jet)
-    
+
     if ax == 1:
         plt.axvline(color='gray',linestyle='dashed')
         data = data[:,val-npix:val+npix]
     else:
         plt.axhline(color='gray',linestyle='dashed')
-        data = data[val-npix:val+npix,:] 
-    
+        data = data[val-npix:val+npix,:]
+
     swath_mean = np.mean(data, axis=ax)
     #swath_median = np.median(data, axis=ax)
     swath_std = np.std(data, axis=ax)
-    
+
     ax = fig.add_subplot(111)
     ax.plot(swath_mean, 'k-', lw=2, label='mean')
     ax.plot(swath_mean + swath_std, 'k--', label='+/- 1std')
     ax.plot(swath_mean - swath_std, 'k--')
-    
+
     plt.show()
-    
+
     return swath_mean
-    
+
 
 def profile_crosshair(data):
     """ averaged row & column profiles in radar coordinates"""
@@ -1279,17 +1279,17 @@ def profile_crosshair(data):
     plt.suptitle('mean profiles in radar coordinates', fontsize=14, fontweight='bold')
     plt.ylabel('row #')
     plt.xlabel('col #')
-    
+
     # create new axes on the right and on the top of the current axes.
     divider = make_axes_locatable(ax)
     ax_x = divider.append_axes("top", size=1.2, pad=0.2, sharex=ax)
     ax_y = divider.append_axes("right", size=1.2, pad=0.2, sharey=ax)
-    
+
     # Row profile (Top)
     mean_rows = np.mean(data, axis=0)
     median_rows = np.median(data, axis=0)
     std_rows = np.std(data, axis=0)
-    
+
     ax_x.plot(mean_rows, 'k-', lw=2, scalex=False, scaley=False)
     ax_x.plot(mean_rows + std_rows, 'k--', label='+/- 1std', scalex=False, scaley=False)
     ax_x.plot(mean_rows - std_rows, 'k--', scalex=False, scaley=False)
@@ -1298,8 +1298,8 @@ def profile_crosshair(data):
         tl.set_visible(False)
     ax_x.set_yticks([-0.5, 0, 0.5])
     ax_x.set_ylabel('cm/yr')
-    
- 
+
+
     # Column Profile (Right)
     mean_cols = np.mean(data, axis=1)
     median_cols = np.median(data, axis=1)
@@ -1326,7 +1326,7 @@ def profile_collapsed(data, center, yex=(-0.5,1.0), nbins=100, markevery=10, ax=
         ax = fig.add_subplot(111)
     else:
         fig = ax.get_figure()
-        
+
     nrow, ncol = data.shape
     r, c = center
     distance = np.zeros_like(data)
@@ -1334,14 +1334,14 @@ def profile_collapsed(data, center, yex=(-0.5,1.0), nbins=100, markevery=10, ax=
     distance = np.hypot(RR-r, CC-c)
     #pcolor(distance)
     #pcolor(array)
-    
+
     # Plot Mean & Std deviation envelopes based on bins
     print(nbins)
     data = data.flatten()
     bins = np.linspace(distance.min(), distance.max(), nbins)
     indBins = np.digitize(distance.flatten(), bins)
     #pcolor(indBins.reshape(nrow, ncol))
-    
+
     ave = np.zeros_like(bins)
     med = np.zeros_like(bins)
     std = np.zeros_like(bins)
@@ -1351,7 +1351,7 @@ def profile_collapsed(data, center, yex=(-0.5,1.0), nbins=100, markevery=10, ax=
         ave[i] = np.mean(goodvals)
         std[i] = np.std(goodvals)
         med[i] = np.median(goodvals)
-    
+
     #plt.plot(distance, data, 'k.', alpha=0.1) #actual data points!
     plt.plot(bins, ave, 'k-', lw=2, label='mean')
     plt.plot(bins, med, 'b-', label='median')
@@ -1363,19 +1363,19 @@ def profile_collapsed(data, center, yex=(-0.5,1.0), nbins=100, markevery=10, ax=
     plt.ylim(yex)
     plt.axhline(c='k')
     plt.legend()
-    
+
 
 def plot_stack(Timeseries, stack, cumDef, cumTime):
     """ Plot output of timeseries stacking """
     self = Timeseries
-    
+
     fig = plt.figure()
     ax = fig.add_subplot(111)
     im = plt.imshow(stack,cmap=plt.cm.jet)
     cb = plt.colorbar()
     cb.set_label('cm / {0:.2f}yr'.format(self.Set.Timespan))
     plt.title('simple stack')
-    
+
     # Subplots --> cumulative deformation, cumulative time, average rate
     fig = plt.figure(figsize=(17,11))
     titlestr = '{0} Stack   {1} Interferograms   {2} : {3} '.format(self.Set.Track,
@@ -1388,42 +1388,42 @@ def plot_stack(Timeseries, stack, cumDef, cumTime):
     cb = plt.colorbar()
     cb.set_label('cm')
     plt.title('cumulative deformation')
-    
+
     ax = fig.add_subplot(132)
     im = plt.imshow(cumTime,cmap=plt.cm.jet)
     cb = plt.colorbar()
     cb.set_label('years')
     plt.title('cumulative time')
-    
+
     ax = fig.add_subplot(133)
     im = plt.imshow(stack,cmap=plt.cm.jet)
     cb = plt.colorbar()
     cb.set_label('cm / {0:.2f}yr'.format(self.Set.Timespan))
     plt.title('average velocity')
-    
+
     plt.show()
 
 
 def plot_bil(Interferogram, cmap=plt.cm.bwr):
     """ Plot output of timeseries stacking """
     ar1, ar2 = roipy.tools.load_bil(Interferogram)
-    
+
     # Subplots --> cumulative deformation, cumulative time, average rate
     fig = plt.figure(figsize=(11,8.5))
-    
+
     plt.suptitle(Interferogram.Name, fontweight='bold', fontsize=12)
     ax = fig.add_subplot(121)
     im = plt.imshow(ar1,cmap=plt.cm.bwr)
     cb = plt.colorbar()
     #cb.set_label('cm')
     plt.title('Array 1')
-    
+
     ax = fig.add_subplot(122)
     im = plt.imshow(ar2,cmap=plt.cm.bwr)
     cb = plt.colorbar()
     #cb.set_label('years')
     plt.title('Array 2')
-    
+
     plt.show()
 
 
@@ -1442,7 +1442,7 @@ def stack(Timeseries, prefix='RmpMskDef', clim='auto', timeWeight=True, **kwargs
         indGood = np.isfinite(data)
         weight[indGood] += -float(ig.Rsc['TIME_SPAN_YEAR']) #uplift positive
         stack[indGood] += data[indGood]
-    
+
     if not timeWeight: weight = 1
     stack = stack / weight
     pcolor(stack, '{0} Stack'.format(self.Set.Track), ig=ig, **kwargs)#, units='pixels' ax=None)
@@ -1458,7 +1458,7 @@ def timespans_dq():
     #using that date. NOTE: Mask out regions of know signal or else large timespan
     #scenes show high variance.
     print('Not Implemented')
-    
+
 def date_variance(Timeseries, signalmask=None, prefix='RmpMskDef', ax=None):
     """ Calculate the average variance and standard deviation of all interferograms
     with a common date """
@@ -1466,11 +1466,11 @@ def date_variance(Timeseries, signalmask=None, prefix='RmpMskDef', ax=None):
     vars = np.zeros(self.Ndate)
     stds = np.zeros_like(vars)
     nigs = np.zeros_like(vars, dtype='i4')
-    
+
     for i,date in enumerate(self.Dates):
         row, col = np.where(self.Pairs == date)
         datevar = np.zeros(row.size)
-        
+
         for j,ind in enumerate(row):
             unw = tools.load_binary_old(Timeseries, self[ind], prefix=prefix)
             unw_ma = np.ma.masked_array(unw, np.isnan(unw))
@@ -1478,13 +1478,13 @@ def date_variance(Timeseries, signalmask=None, prefix='RmpMskDef', ax=None):
                 signal = np.load(signalmask)
                 unw_ma[signal] = ma.masked
             datevar[j] = np.mean(unw_ma)
-            
+
         nigs[i] = row.size
         vars[i] = np.mean(datevar)
         stds[i] = np.std(datevar)
-        
+
     dates = np.array(pltdate.num2date(self.DatesSerial))
-    
+
     if ax==None:
         fig = plt.figure(figsize=(11,8))
         ax = fig.add_subplot(111)
@@ -1492,18 +1492,18 @@ def date_variance(Timeseries, signalmask=None, prefix='RmpMskDef', ax=None):
         fig = ax.get_figure()
     #ax.plot(dates, vars, 'bo', markersize=18)
     #ax.errorbar(dates, vars, stds, fmt='bo', markersize=18, ecolor='0.1')
-    
+
     # Dots Colored by number of interferograms
     sc = ax.scatter(dates, vars, s=75, c=nigs, cmap=plt.cm.jet_r, zorder=20) #'s' can also be array for variable sizing
     ax.errorbar(dates, vars, stds, fmt=None, ecolor='0.1') #None--> just error bars
-    
+
     #plot average variance & std range
     avevar = np.mean(vars)
     stdvar = np.std(vars)
     plt.axhline(avevar, color='k', linestyle='--', linewidth=2)
     plt.axhspan(avevar-stdvar, avevar+stdvar, linestyle='dashed', facecolor='y', alpha=0.3)
     plt.axhspan(avevar-2*stdvar, avevar+2*stdvar, linestyle='dotted', facecolor='y', alpha=0.3)
-    
+
     #label number of interferograms containing date at top of plot
     #NOTE: alternative is to color by #IGs
     '''
@@ -1514,11 +1514,11 @@ def date_variance(Timeseries, signalmask=None, prefix='RmpMskDef', ax=None):
                     va='top',
                     bbox=dict(facecolor='white'),
                     transform=trans)
-    
+
     ax.set_title('Date Quality Assessment')
     ax.set_ylabel('Average Variance')
     '''
-    
+
     # format the ticks
     ax.set_ylabel('variance')
     months = pltdate.MonthLocator()
@@ -1529,11 +1529,11 @@ def date_variance(Timeseries, signalmask=None, prefix='RmpMskDef', ax=None):
     datemax = datetime.date(dates[-1].year+1, 1, 1)
     ax.set_xlim(datemin, datemax)
     fig.autofmt_xdate() #rotation=90
-    
+
     #NOTE: for some reason must come after autofmt_xdate
     cbar = plt.colorbar(sc) #could do horizontal position
     cbar.set_label('# of interferograms')
-    
+
     #return dates with variance greater than 1 std to filter from time series
     #Set up another function for this (like match_date... get_iglist())
     baddates = np.where(vars > avevar+stdvar)[0]
@@ -1541,11 +1541,11 @@ def date_variance(Timeseries, signalmask=None, prefix='RmpMskDef', ax=None):
     for date in baddates:
         inds.append(np.where(self.Pairs == self.Dates[date])[0])
     alligs = np.unique(np.hstack(inds))
-    
+
     igList = []
     for ig in alligs:
         igList.append(self.PairsString[ig])
-    
+
     return igList
     plt.show()
 
@@ -1553,13 +1553,13 @@ def date_variance(Timeseries, signalmask=None, prefix='RmpMskDef', ax=None):
 def timespans(Timeseries, ax=None):
     """Make a plot showing the timespans of all interferograms in a set"""
     self = Timeseries
-    
+
     if ax==None:
         fig = plt.figure()
         ax = fig.add_subplot(111)
     else:
         fig = ax.get_figure()
-    
+
     ers = None
     envi = None
     alos = None
@@ -1577,11 +1577,11 @@ def timespans(Timeseries, ax=None):
             ers, = ax.plot(IGspan, counter, 'b.-',label='ERS')
         elif ig.Rsc['PLATFORM'] == 'ALOS':
             alos, = ax.plot(IGspan, counter, 'b.-',label='ALOS')
-    
+
     # Avoid 100's of legend labels
     handles = [p for p in (ers,envi,alos) if not p==None]
     labels = [p.get_label() for p in handles]
-    
+
     ax.set_ylim(0,i+2)
     dates = [pltdate.num2date(int(date)) for date in self.Set.DatesSerial]
     months = pltdate.MonthLocator()
@@ -1592,7 +1592,7 @@ def timespans(Timeseries, ax=None):
     datemax = datetime.date(dates[-1].year+1, 1, 1)
     ax.set_xlim(datemin, datemax)
     fig.autofmt_xdate()
-    
+
     plt.grid(True)
     plt.title('{0} Interferogram Timespans'.format(self.Set.Track))
     plt.xlabel('Date')
@@ -1625,7 +1625,7 @@ def summary2(Timeseries, signalmask=None, prefix='RmpMskDef'):
             unw_ma[indSignal] = ma.masked
         mean[i] = np.mean(unw_ma)
         std[i] = np.std(unw_ma)
-    
+
     fig = plt.figure(figsize=(11,8))
     ax = fig.add_subplot(141)
     marker= 'bo'
@@ -1633,21 +1633,21 @@ def summary2(Timeseries, signalmask=None, prefix='RmpMskDef'):
     #ax.errorbar(np.arange(self.Nig), mean, std,fmt=marker)
     ax.set_xlabel('Interferogram #')
     ax.set_ylabel('Mean Phase')
-    
+
     ax = fig.add_subplot(142)
     ax.plot(timespans, std, marker)
     ax.set_xlabel('Timespan')
     #ax.set_ylabel('Mean Phase')
-    
+
     ax = fig.add_subplot(143)
     ax.plot(baselines,std, marker)
     ax.set_xlabel('Perp Basline')
     #ax.set_ylabel('Mean Phase')
-    
+
     ax = fig.add_subplot(144)
     ax.hist(std)
     ax.set_xlabel('DEM phase fit')
-    
+
     plt.suptitle('{} Summary'.format(prefix))
     plt.savefig('summary.pdf')
 
@@ -1672,7 +1672,7 @@ def summary(Timeseries, signalmask=None, prefix='RmpMskDef'):
             unw_ma[indSignal] = ma.masked
         mean[i] = np.mean(unw_ma)
         std[i] = np.std(unw_ma)
-    
+
     fig = plt.figure(figsize=(11,8))
     ax = fig.add_subplot(131)
     marker= 'o'
@@ -1681,7 +1681,7 @@ def summary(Timeseries, signalmask=None, prefix='RmpMskDef'):
     ax.set_ylabel('Mean Phase')
     ax.axhline(0.0, c='k')
     ax.axhline(5.62/2, c='k')
-    
+
     ax = fig.add_subplot(132)
     #timespans in ascending order, NOTE, sorting automatically happens b/c scatter data
     #t_sort = timespans.argsort()
@@ -1689,7 +1689,7 @@ def summary(Timeseries, signalmask=None, prefix='RmpMskDef'):
     ax.errorbar(timespans, mean, std,fmt=marker,ecolor='0.75') #gray color
     ax.set_xlabel('Timespan')
     #ax.set_ylabel('Mean Phase')
-    
+
     ax = fig.add_subplot(133)
     #baselines in ascending order
     #b_sort = baselines.argsort()
@@ -1697,18 +1697,18 @@ def summary(Timeseries, signalmask=None, prefix='RmpMskDef'):
     ax.errorbar(baselines, mean, std,fmt=marker,ecolor='0.75')
     ax.set_xlabel('Perp Basline')
     #ax.set_ylabel('Mean Phase')
-    
+
     #ax = fig.add_subplot(144)
     #baselines in ascending order
     #b_sort = baselines.argsort()
     #ax.errorbar(baselines.sort(), mean[b_sort], std[b_sort], fmt='b.')
     #ax.errorbar(baselines, mean, std,fmt=marker, ecolor='0.75')
     #ax.set_xlabel('Perp Basline')
-    
+
     plt.suptitle('{} Summary'.format(prefix))
     plt.savefig('summary.pdf')
-   
-'''    
+
+'''
 def vmap_timeseries_new(Timeseries, cumdef=None, clim='auto'):
     """ Use pix2cumdef.mat array from matlab routines """
     self = Timeseries
@@ -1718,19 +1718,19 @@ def vmap_timeseries_new(Timeseries, cumdef=None, clim='auto'):
     if cumdef == None:
         path = os.path.join(Timeseries.OutDir,'pix2cumdef_svd.mat')
         cumdef = tools.load_mat(path, length, width)
-    
+
     tsVel = np.zeros(length*width)
     slope = np.zeros_like(tsVel)
     rsq = np.zeros_like(tsVel)
     stderr = np.zeros_like(tsVel)
     for i,pix in enumerate(tsVel):
         slope[i], rsq[i], stderr[i] = tools.calc_fit(Timeseries, cumdef, pix)
-    
+
     tsVel = np.reshape(tsVel, (self.Set.Width, self.Set.Length))
     pcolor(tsVel, '{0} Best-fit Linear Velocity'.format(self.Set.Track))
     if not clim == 'auto':
         plt.clim(clim)
-    
+
     return tsVel
 '''
 
@@ -1739,15 +1739,15 @@ def vmap_timeseries(Timeseries, result='pix2avevel_svd.mat', clim='auto'):
     self = Timeseries
     path = os.path.join(self.OutDir, result)
     tsVel = -1 * tools.load_mat(path, self.Set.Length, self.Set.Width)
-    #tsVel = np.fliplr(tsVel.reshape((self.Set.Length, self.Set.Width),order='F'))
-    
+    tsVel = np.fliplr(tsVel.reshape((self.Set.Length, self.Set.Width),order='F'))
+
     if self.Set.Orbit == 'descending':
         tsVel = np.rot90(tsVel,2)
-    
+
     pcolor(tsVel, '{0} Best-fit Linear Velocity'.format(self.Set.Track))
     if not clim == 'auto':
         plt.clim(clim)
-    
+
     return tsVel
 
 
@@ -1763,14 +1763,14 @@ def colorbar_only(vmin,vmax,outname='colorbar.png',figsize=(4,1),
     if orient == 'vertical':
         figsize = (1,4)
         cbsize = [0.05,0.05,0.1,0.9]
-    
+
     fig = plt.figure(figsize=figsize)
     ax = fig.add_axes(cbsize)
-    
+
     if cmap == None:
         cmap = mpl.cm.jet
     norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
-    
+
     cb = mpl.colorbar.ColorbarBase(ax,
                                 cmap=cmap,
                                 norm=norm,
@@ -1778,11 +1778,11 @@ def colorbar_only(vmin,vmax,outname='colorbar.png',figsize=(4,1),
                                 orientation=orient,
                                 )
     cb.set_label(label)
-    
+
     #Show & save
     if show:
         plt.show()
-    
+
     plt.savefig(outname,
                 transparent=transparent,
                  bbox_inches='tight', #doesn't work for ps output...
@@ -1796,14 +1796,14 @@ def colorbar_only(vmin,vmax,outname='colorbar.png',figsize=(4,1),
 '''
 def timeseries(Timeseries, cumdef=None, sub=(1515,135),order=1):
     """ Plot the timeseries for a specified pixel """
-    
+
     self = Timeseries.Set
     length = self.Length
     width = self.Width
     if cumdef == None:
         path = os.path.join(Timeseries.OutDir,'pix2cumdef_svd.mat')
         cumdef = tools.load_mat(path, length, width)
-    
+
     dates = np.array([pltdate.num2date(int(date)) for date in self.DatesSerial])
     datatype = np.dtype('<f4')
     pixel = np.ravel_multi_index(sub,(length, width))
@@ -1821,7 +1821,7 @@ def timeseries(Timeseries, cumdef=None, sub=(1515,135),order=1):
     ax.set_xlabel('Date')
     ax.set_ylabel('Displacement (cm)')
     plt.hold(True)
-    
+
     if order: # Plot best-fit line
         coef = np.polyfit(X,Y,order)
         fit = np.poly1d(coef)
@@ -1829,14 +1829,69 @@ def timeseries(Timeseries, cumdef=None, sub=(1515,135),order=1):
         points = np.linspace(xmin,xmax,20)
         line_fit = ax.plot(points,fit(points),'--')
         equation = 'y = %.3fx + %.3f' % (coef[0],coef[1])
-        ax.text(0.95, 0.95, equation, 
+        ax.text(0.95, 0.95, equation,
                 horizontalalignment='right',
                 verticalalignment='center',
-                transform = ax.transAxes) 
+                transform = ax.transAxes)
     #plt.draw()
 '''
 
+def calc_timeseries_ave(Timeseries, cumdef=None, index=None, showloc=False):
+    """ Extract cumulative deformation values from 10x10 pixel box for plotting """
 
+    self = Timeseries.Set
+    length = self.Length
+    width = self.Width
+    if cumdef == None:
+        path = os.path.join(Timeseries.OutDir,'pix2cumdef_svd.mat')
+        cumdef = tools.load_mat(path)
+
+    #NOTE: descending tracks are read in flipped up-down,
+    #ascending tracks are read in flipped left-right
+    if self.Orbit == 'descending':
+        indmat = (length - index[0], index[1])
+    else:
+        indmat = (index[0], width - index[1])
+    dates = np.array(pltdate.num2date(self.DatesSerial))
+
+    area = []
+    for i in np.arange(-3,4):
+        for j in np.arange(-3,4):
+            index = (indmat[0]+i, indmat[1]+j)
+            pixel = np.ravel_multi_index(index,(length,width),order='F')
+            #print(index)
+            deformation = cumdef[:,pixel]
+            area.append(deformation)
+
+    if showloc:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        path = os.path.join(Timeseries.OutDir, 'pix2avevel_svd.mat')
+        tsVel = -1 * tools.load_mat(path, self.Length, self.Width)
+        tsVel = tsVel.reshape((self.Length, self.Width),order='F')
+        # NOTE: commented out 10/2/13 b/c taken care of in load_mat? -SH
+        if self.Orbit == 'descending': #Depends on version of matlab filel it seems...
+            tsVel = np.rot90(tsVel,2)
+        #pcolor(tsVel, '{0} Best-fit Linear Velocity'.format(self.Track))
+        #NOTE: must use plt.imshow to interact w/ figure in ipython...
+        im = plt.imshow(tsVel, cmap=plt.cm.jet)
+        cb = plt.colorbar(im)
+        for i in np.arange(-3,4):
+            for j in np.arange(-3,4):
+                index = (indmat[0]+i, indmat[1]+j)
+                ax.plot(index[1],index[0], marker='s', mec='k', mew=2, mfc='none', scalex=0, scaley=0)
+
+    area = np.array(area)
+    deformation = np.nanmean(area, axis=0)
+    std = np.nanstd(area, axis=0)
+
+    indDates = np.isfinite(deformation)
+    X = dates[indDates]
+    Y = -deformation[indDates].transpose()
+    Y_std = std[indDates].transpose()
+    print(Y_std)
+
+    return X,Y,Y_std,indDates
 
 
 def calc_timeseries(Timeseries, cumdef=None, index=None, showloc=False):
@@ -1848,14 +1903,14 @@ def calc_timeseries(Timeseries, cumdef=None, index=None, showloc=False):
     if cumdef == None:
         path = os.path.join(Timeseries.OutDir,'pix2cumdef_svd.mat')
         cumdef = tools.load_mat(path)
-    
+
     #NOTE: descending tracks are read in flipped up-down,
     #ascending tracks are read in flipped left-right
     if self.Orbit == 'descending':
         indmat = (length - index[0], index[1])
     else:
         indmat = (index[0], width - index[1])
-    
+
     dates = np.array(pltdate.num2date(self.DatesSerial))
     #datatype = np.dtype('<f4')
     pixel = np.ravel_multi_index(indmat,(length,width),order='F') #numpy >1.6
@@ -1866,7 +1921,7 @@ def calc_timeseries(Timeseries, cumdef=None, index=None, showloc=False):
     indDates = np.isfinite(deformation)
     X = dates[indDates]
     Y = -deformation[indDates].transpose()
-    
+
     #show pixel location on velocity map
     if showloc:
         fig = plt.figure()
@@ -1875,20 +1930,20 @@ def calc_timeseries(Timeseries, cumdef=None, index=None, showloc=False):
         tsVel = -1 * tools.load_mat(path, self.Length, self.Width)
         tsVel = np.fliplr(tsVel.reshape((self.Length, self.Width),order='F'))
         # NOTE: commented out 10/2/13 b/c taken care of in load_mat? -SH
-        #if self.Orbit == 'descending':
-        #    tsVel = np.rot90(tsVel,2)
+        if self.Orbit == 'descending':
+            tsVel = np.rot90(tsVel,2)
         #pcolor(tsVel, '{0} Best-fit Linear Velocity'.format(self.Track))
         #NOTE: must use plt.imshow to interact w/ figure in ipython...
         im = plt.imshow(tsVel, cmap=plt.cm.jet)
         cb = plt.colorbar(im)
         ax.plot(index[1],index[0], marker='s', mec='k', mew=2, mfc='none', scalex=0, scaley=0)
-    
+
     return X,Y,indDates
 
 
 def timeseries(Timeseries, index=('row','col'), cumdef=None, order=1, annotate=None,
                save=False, style='default', biannual=False, showloc=False, fit='linear',
-               showfit=False, errorbar=False, yerr=1, ax=None):
+               showfit=False, errorbar=False, yerr=True, ax=None):
     """ Plot the timeseries for a specified pixel default is uturuncu t10
     data is the pix2cumdef array
     """
@@ -1898,28 +1953,29 @@ def timeseries(Timeseries, index=('row','col'), cumdef=None, order=1, annotate=N
     #eq1 = datetime.date(2009,12,6)
     #eq2 = datetime.date(2009,12,19)
     #plt.axvspan(eq1,eq2,facecolor='g',alpha=0.5)
-    
+
     if ax == None:
         fig = plt.figure()
         ax = fig.add_subplot(111)
     else:
         fig = ax.get_figure()
-    
+
     self = Timeseries.Set
-    
+
     if style != 'default': #e.g. poster vs. paper font sizes
         set_style(style)
-    
-    X,Y,indDates = calc_timeseries(Timeseries, cumdef, index, showloc)
+
+    #X,Y,indDates = calc_timeseries(Timeseries, cumdef, index, showloc)
+    X,Y,Ystd,indDates = calc_timeseries_ave(Timeseries, cumdef, index, showloc)
     X_ = self.DatesSerial[indDates]
 
 
-    
-    if errorbar:    
-        ax.errorbar(X,Y,yerr=yerr, fmt='o') #plus or mis 0.5 yunit errorbars
+
+    if errorbar:
+        ax.errorbar(X,Y,yerr=Ystd, fmt='o') #plus or mis 0.5 yunit errorbars
     else:
         ax.plot(X,Y,'bo') #makersize=5 overwrites whatever st by mpl.rc() command
-    
+
     if annotate:
         title = '{0} pixel={1}'.format(self.Track, index)
         ax.set_title(title)
@@ -1932,13 +1988,13 @@ def timeseries(Timeseries, index=('row','col'), cumdef=None, order=1, annotate=N
     ax.fmt_xdata = pltdate.DateFormatter('%Y-%m-%d')
     #plt.hold(True)
     ax.grid(True)
-    
+
     #Linear Fit 1
-    if fit == 'linear':    
+    if fit == 'linear':
         slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(X_,Y)
         poly = np.poly1d((slope,intercept))
         r_sq = r_value**2
-        if showfit: 
+        if showfit:
             lineFit = ax.plot(X_, poly(X_), 'k-',label='linear')
             #equation = r'$y = %.3fx + %.3f$' % (slope,intercept)
             slope_cmyr = slope*365 #cm/day to cm/yr
@@ -1948,7 +2004,7 @@ def timeseries(Timeseries, index=('row','col'), cumdef=None, order=1, annotate=N
             ax.text(0.95, 0.10, slopeText,  #.95 upper right
                     horizontalalignment='right',
                     verticalalignment='center',
-                    transform = ax.transAxes) 
+                    transform = ax.transAxes)
             ax.text(0.95, 0.05, fitQual,  #.9 upper right
                     horizontalalignment='right',
                     verticalalignment='center',
@@ -1971,7 +2027,7 @@ def timeseries(Timeseries, index=('row','col'), cumdef=None, order=1, annotate=N
     slope_cmyr = slope*365
     print slope_cmyr,r_sq
     '''
-    
+
     if fit == 'quadratic':
         print('fitting 2nd-order polynomial')
         coef = np.polyfit(X_,Y,2)
@@ -1986,14 +2042,14 @@ def timeseries(Timeseries, index=('row','col'), cumdef=None, order=1, annotate=N
                     horizontalalignment='right',
                     verticalalignment='center',
                     transform = ax.transAxes)
-    
+
     # Plot date labels every other year for long timseries
     if biannual:
         annual = pltdate.YearLocator(1)
         biannual = pltdate.YearLocator(2)
         ax.xaxis.set_major_locator(biannual)
         ax.xaxis.set_minor_locator(annual)
-    
+
     fig.autofmt_xdate() #Angle dates #NOT working if ax passed to another function...?
     plt.ylabel(r'$\Delta LOS$ (cm)')
     #plt.legend(loc=2)
@@ -2002,7 +2058,7 @@ def timeseries(Timeseries, index=('row','col'), cumdef=None, order=1, annotate=N
         save_figure('timeseries{0}'.format(sub))#,outdir='/home/scott/figures/AGU_2011')
 
 
-''' 
+'''
 def save_figure(name,nfig=None,fmt='eps',alpha=False):
     """Save figure to file"""
     outdir = '/home/scott/figures/AGU_2011/timeseries/'#NOTE: change to initialization attribute
@@ -2014,10 +2070,10 @@ def save_figure(name,nfig=None,fmt='eps',alpha=False):
                 bbox_inches='tight',
                 pad_inches=0.05)
     print 'saved: {0}'.format(savename)
-    
+
 def set_style(style='presentation'):
     """change matplotlib plotting defaults for font sizes for posters or papers"""
-    if style == 'presentation': 
+    if style == 'presentation':
         #print mpl.rcParams
         font = {'size': 16}#,
                 #'weight':'bold'} bold is too bold
@@ -2039,22 +2095,22 @@ def timeseries_separate(Timeseries, index=(1515,135), data=None, order=1,
         ax = fig.add_subplot(111)
     else:
         fig = ax.get_figure()
-    
+
     self = Timeseries.Set
     X,Y,indDates = calc_timeseries(Timeseries, data, index)
-    
-    dates_string = self.Dates.astype('S8') 
+
+    dates_string = self.Dates.astype('S8')
     dates_serial = self.DatesSerial
     X_serial = dates_serial[indDates]
     X_string = dates_string[indDates]
-    
+
     ersIGs = self.query('PLATFORM','ERS1') + self.query('PLATFORM','ERS2')
     envisatIGs = self.query('PLATFORM','Envisat')
     ersList = set(' '.join(ersIGs).split())
     envisatList = set(' '.join(envisatIGs).split())
     commonList = ersList.intersection(envisatList) #dates with both ERS & ENVISAT acquisitions
     #print commonList
-    
+
     x_ers = []; y_ers = [] #NOTE: alternatively could change point color after plotting
     x_envisat = []; y_envisat = []
     x_common= []; y_common = []
@@ -2068,9 +2124,9 @@ def timeseries_separate(Timeseries, index=(1515,135), data=None, order=1,
         else:
             x_envisat.append(plotdate)
             y_envisat.append(value)
-        
 
-    
+
+
     if errorbar:
         ax.errorbar(x_envisat,y_envisat, yerr=yerr,fmt='bo',label='Envisat')
         ax.errorbar(x_ers,y_ers,yerr=yerr,fmt='g^',label='ERS')
@@ -2079,16 +2135,16 @@ def timeseries_separate(Timeseries, index=(1515,135), data=None, order=1,
         ax.plot(x_envisat,y_envisat,'bo',markersize=5,label='Envisat')
         ax.plot(x_ers,y_ers,'g^',markersize=5,label='ERS')
         ax.plot(x_common,y_common,'r*',markersize=5,label='Both')
-    
-    
+
+
     ax.legend(loc=2,numpoints=1) #upper left legend
-    
+
     #minor tick dates by month
     months = pltdate.MonthLocator()
     ax.xaxis.set_minor_locator(months)
     #more precise date string for the x axis locations in the
     ax.fmt_xdata = pltdate.DateFormatter('%Y-%m-%d')
-    
+
     if annotate:
         title = '{} Time Series, Pixel={}'.format(self.Track,index)
         ax.set_title(title)
@@ -2096,7 +2152,7 @@ def timeseries_separate(Timeseries, index=(1515,135), data=None, order=1,
         ax.set_ylabel('Displacement (cm)')
     #ax.hold(True)
     ax.grid(1)
-    
+
     if order: # Plot best-fit line
         slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(X_serial,Y)
         fit = np.poly1d((slope,intercept))
@@ -2109,7 +2165,7 @@ def timeseries_separate(Timeseries, index=(1515,135), data=None, order=1,
         ax.text(0.95, 0.10, slopeText,  #.95 upper right
                 horizontalalignment='right',
                 verticalalignment='center',
-                transform = ax.transAxes) 
+                transform = ax.transAxes)
         ax.text(0.95, 0.05, fitQual,  #.9 upper right
                 horizontalalignment='right',
                 verticalalignment='center',
@@ -2133,7 +2189,7 @@ def hist(data, signalmask=None, nbins=50):
     mean = np.mean(unw_ma)
     std = np.std(unw_ma)
     var = std**2
-    
+
     clim = (mean-2*std, mean+2*std)
 
     histdata = data[np.isfinite(data)].flatten()
@@ -2143,8 +2199,8 @@ def hist(data, signalmask=None, nbins=50):
     plt.axvline(x=clim[1],color='r')
     #plt.title('Histogram of {0} {1}'.format(ig.Name, prefix))
     plt.xlabel('value')
-    plt.ylabel('# pixels')    
-    
+    plt.ylabel('# pixels')
+
     # for rescaling images to demphasize outliers & bring out middle values/background
     return clim
 
@@ -2161,8 +2217,8 @@ def baseline_perp(Set):
     plt.title('{0} Perpendicular Baselines'.format(self.Track))
     plt.ylabel('B_perp (m)')
     plt.xlabel('Interferogram #')
-    
-    
+
+
 def baseline_time(Set):
     """ bargraph of time separation for each ig in set"""
     #NOTE: may want to convert to days...
@@ -2176,14 +2232,14 @@ def baseline_time(Set):
     plt.title('{0} Temporal Baselines'.format(self.Track))
     plt.ylabel('B_temporal (years)')
     plt.xlabel('Interferogram #')
-    
-    
+
+
 def baseline_both(Set):
     """ Sort by increasing temoral baseline, after Casu et al 2008 fig2"""
     #Make use of mpl.axis_grid1 and numpy recarray & sort by timespan
     print('Low on the priority list...')
-    
-    
+
+
 def baseline_plot(Set):
     """ python version of the classic baseline plot. assumes set of
     interferograms already exists & just connects the dots"""
@@ -2191,12 +2247,12 @@ def baseline_plot(Set):
     self = Set
     #Make use of mpl.axis_grid1 and numpy recarray & sort by timespan
     #dates = np.array([pltdate.num2date(int(date)) for date in self.DatesSerial])
-    #pltdates = dt.datetime.strptime(self.Baselines.keys(), '%Y%m%d') 
+    #pltdates = dt.datetime.strptime(self.Baselines.keys(), '%Y%m%d')
     dates = pltdate.num2date(self.DatesSerial)
     baselines = [self.Baselines[date.strftime('%Y%m%d')] for date in dates]
     ax = plt.plot(dates, baselines, 'ko', markersize=8)
     plt.hold(True)
-    
+
     # NOTE: find date pairs & connect the dots, brute force see LineCollection for alternative
     # NOTE: should add text labels to points
     d = [0,0]
@@ -2221,27 +2277,27 @@ def data_frames(ts, fwidth=17.0, fheight=11.0, nrow=4, normalize=True,
     #NOTE: add ability to layout just a subregion...
     #NOTE: implement colorbar=single
     #NOTE: add ability to do a query on timeseries instance, and only show matches
-    
+
     #path = os.path.join(ts.OutDir,'pix2cumdef_svd.mat')
     length = ts.Set.Length
     width = ts.Set.Width
     #cumdef = -1.0 * tools.load_mat(path, length, width)
-    #base = np.zeros((1,length*width)) 
+    #base = np.zeros((1,length*width))
     #cumdef = np.vstack((base,cumdef))
     #want first date to have zeros instead of nans
     #cumdef[0,:] = 0.0
-    
+
     #scale all images to final deformation limits
     #data = cumdef[-1]
     #master_norm = mpl.colors.Normalize(vmin=data[np.isfinite(data)].min(),
     #                                   vmax=data[np.isfinite(data)].max())
-    
+
     # Landscape-style layout, just two columns b/c length is long!
     igrams = float(ts.Set.Nig)
     ncol = np.ceil(igrams/nrow).astype(np.int)
     fig = plt.figure(figsize=(fwidth,fheight))
     fig.suptitle('{} Deformation (cm)'.format(ts.Set.Track), fontsize=14, fontweight='bold')
-    
+
     grid = ImageGrid(fig, 111, # similar to subplot(111)
                     nrows_ncols = (nrow, ncol),
                     direction="row",
@@ -2266,13 +2322,13 @@ def data_frames(ts, fwidth=17.0, fheight=11.0, nrow=4, normalize=True,
         cmin = np.nanmin(data)
         cmax = np.nanmax(data)
         ax.cax.set_xticks([cmin,0,cmax])
-        
+
         #ax.set_title(str(i))
         #ax.set_title(ig.Rsc['DATE12'], fontsize=10, weight='bold')
         #datepairs = ts.Set.match_date(date).size
         if ylabeldate:
             ax.set_ylabel(ig.Rsc['DATE12'])
-        
+
         #at = AnchoredText(str(i), prop=dict(size=8, weight='bold'), loc=1, #pad=0.2,
         #                  borderpad=0.0, frameon=True)
         #at.patch.set_boxstyle("round, pad=0.1, rounding_size=0.2") #rounded box
@@ -2283,11 +2339,11 @@ def data_frames(ts, fwidth=17.0, fheight=11.0, nrow=4, normalize=True,
                 va='top',
                 bbox=dict(facecolor='white'),
                 transform=ax.transAxes)
-        
+
         #no ticks
         ax.tick_params(labelbottom=0,labeltop=0,labelleft=0,labelright=0,
                         bottom=0,top=0,left=0,right=0)
-    
+
     #single colorbar based on last frame
     #ax.cax.colorbar(im)
     #cbar = grid.cbar_axes[0].colorbar(im)
@@ -2300,38 +2356,38 @@ def data_frames(ts, fwidth=17.0, fheight=11.0, nrow=4, normalize=True,
             #print ax
             ax.set_visible(False)
             ax.cax.set_visible(False)
-    
+
     plt.savefig(outname)
-    outpath = os.path.abspath(outname)          
-    print('saved {}'.format(outpath))        
-         
-         
-            
+    outpath = os.path.abspath(outname)
+    print('saved {}'.format(outpath))
+
+
+
 def synthetic_frames_asc(ts, fwidth=11.0, fheight=8.0, nrow=2, normalize=True,
                                show=True):
     """ Make a 'proof sheet' of all frames in time series """
     #NOTE: add ability to layout just a subregion...
-    
+
     path = os.path.join(ts.OutDir,'pix2cumdef_svd.mat')
     length = ts.Set.Length
     width = ts.Set.Width
     cumdef = -1.0 * tools.load_mat(path, length, width)
-    #base = np.zeros((1,length*width)) 
+    #base = np.zeros((1,length*width))
     #cumdef = np.vstack((base,cumdef))
     #want first date to have zeros instead of nans
     cumdef[0,:] = 0.0
-    
+
     #scale all images to final deformation limits
     data = cumdef[-1]
     master_norm = mpl.colors.Normalize(vmin=data[np.isfinite(data)].min(),
                                        vmax=data[np.isfinite(data)].max())
-    
+
     # Landscape-style layout, just two columns b/c length is long!
     dates = float(ts.Set.Ndate)
     ncol = np.ceil(dates/nrow).astype(np.int)
     fig = plt.figure(figsize=(fwidth,fheight))
     fig.suptitle('{} Synthetic Reconstruction'.format(ts.Set.Track), fontsize=14, fontweight='bold')
-    
+
     grid = ImageGrid(fig, 111, # similar to subplot(111)
                     nrows_ncols = (nrow, ncol),
                     direction="row",
@@ -2377,7 +2433,7 @@ def synthetic_frames_asc(ts, fwidth=11.0, fheight=8.0, nrow=2, normalize=True,
 def project2utm(Point, epsg=32719, printout=True):
     """ Transform point object in lat/lon to UTM 192 WGS84 (epsg=32719)"""
     oldCoords = Point.GetPoint()
-    
+
     srs = Point.GetSpatialReference()
     trs = osr.SpatialReference()
     trs.ImportFromEPSG(epsg)
@@ -2419,7 +2475,7 @@ def make_profile(path, rasters=['stack282','dem_t282'],unit='degrees'):
         latlon2utm = osr.CoordinateTransformation(srs, trs)
 
     n = layer.GetFeatureCount()
-    X = np.zeros(n); Y = np.zeros(n) 
+    X = np.zeros(n); Y = np.zeros(n)
     Z = np.zeros(n); Z1 = np.zeros(n)
 
 
@@ -2433,7 +2489,7 @@ def make_profile(path, rasters=['stack282','dem_t282'],unit='degrees'):
     #the method
     feature = layer.GetNextFeature()
     while feature:
-        i = feature.GetFID()    
+        i = feature.GetFID()
         point_p = feature_p.GetGeometryRef()
         point = feature.GetGeometryRef()
         point.Transform(latlon2utm)
@@ -2444,7 +2500,7 @@ def make_profile(path, rasters=['stack282','dem_t282'],unit='degrees'):
 
         feature_p = feature
         feature = layer.GetNextFeature()
-    
+
     # LATLON2KM APPROXIMATION
     """
     deg2km = 105.0 #~105km/deg at 22S
@@ -2452,7 +2508,7 @@ def make_profile(path, rasters=['stack282','dem_t282'],unit='degrees'):
     layer.ResetReading()
     feature = layer.GetNextFeature()
     while feature:
-        i = feature.GetFID()    
+        i = feature.GetFID()
         X_approx[i] = feature.GetField('accumDst') * deg2km  #distance in km
         #Z[i] = feature.GetField(rasters[0])         #LOS velocity cm/yr
         #Z1[i] = feature.GetField(rasters[1])        #elevation in m
@@ -2483,9 +2539,7 @@ def make_profile(path, rasters=['stack282','dem_t282'],unit='degrees'):
     #ax.set_xlim(0,110)
     ax.set_ylim(-1.5,1.5)
     ax2.set_ylim(3000,6000)
-    
+
     #header = 'longitude latitude aveVelocity(cm/yr) elevation(m)' #only in version 2.0
     np.savetxt('profile.out',np.vstack((X,Y,Z,Z1)).transpose(),fmt='%.4f')#,header=header)
-    # NOTE: easy to reproduce plot loading data with np.loadtxt()    
-    
-    
+    # NOTE: easy to reproduce plot loading data with np.loadtxt()

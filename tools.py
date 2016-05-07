@@ -54,7 +54,7 @@ def load_grd(path):
         shape = (grdFile.dimensions['y'], grdFile.dimensions['x'])
         data = grdFile.variables['z'][::-1]
         data = np.reshape(data,shape)
-        
+
     return data
 
 def calc_fit(tsInstance, cumdef=None, pixel=None, fit='linear'):
@@ -74,13 +74,13 @@ def calc_fit(tsInstance, cumdef=None, pixel=None, fit='linear'):
     X_ = self.DatesSerial[indDates]
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(X_,Y)
     rsq = r_value**2
-    
+
     return slope, rsq, std_err
 
 
 
 def make_synthetic(Geogram, center=(-67.22,-22.27), source='mogi', source_params=dict(xoff=1e2,yoff=1e3,d=25e3,dV=30e6,nu=0.25,output='cart'), incpath='.'):
-    """ create synthetic deformation source on same georeferenced grid as interferogram 
+    """ create synthetic deformation source on same georeferenced grid as interferogram
     NOTE: should have a simple way to do this for both radar coords & georeferenced coords
     Example:
         geo = rp.data.Geogram('geo_stack89_8rlks.unw')
@@ -93,11 +93,11 @@ def make_synthetic(Geogram, center=(-67.22,-22.27), source='mogi', source_params
     X = latlon2range(Lat, center[0]*np.ones_like(Lon), Lat, Lon,output='lon') #in meters
     Y = latlon2range(center[1]*np.ones_like(Lat), Lon, Lat, Lon,output='lat')
     #R = latlon2range(center[1]*np.ones_like(Lat), center[0]*np.ones_like(Lon), Lat, Lon,output='hypot')
-    
+
     # Calculate synthetic
     if source == 'mogi':
         ux,uy,uz = roipy.models.calc_mogi(X,Y,**source_params)
-    
+
     # Project to los - separate function?
     if os.path.exists(incpath):
         #inc = rp.data.Geogram(incpath)
@@ -107,7 +107,7 @@ def make_synthetic(Geogram, center=(-67.22,-22.27), source='mogi', source_params
         head = np.radians(head)
         ulos = -1 * (np.sin(look)*np.sin(head)*ux + np.sin(look)*np.cos(head)*uy -np.cos(look)*uz)
         return ux,uy,uz,ulos
-    
+
     # NOTE: incorporate plotting command to show map grid of 4 components
     return ux,uy,uz
 
@@ -128,19 +128,19 @@ def dem_phase_set(Set, hgtPath = '/home/scott/data/insar/t6089/aux_files/radar_3
         vecHGT = vecHGT[~masked]
         slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(vecHGT,vecPHS)
         rsq[i] = r_value**2
-        
+
     fig = plt.figure()
     plt.plot(rsq, 'bo')
     plt.axhline(0.2)
     plt.xlabel('Interferogram #')
     plt.ylabel('r^2')
     plt.title('DEM vs Phase fits')
-    
+
 
 def load_roifile(Interferogram):
     """ Call appropriate load() function based on file suffix """
     self = Interferogram
-    ext = os.path.splitext(self.Name)[1] 
+    ext = os.path.splitext(self.Name)[1]
     if ext in ['rmg','unw','cor','hgt','msk']:
         data = load_bil(self)
     elif ext in ['slc', 'int', 'amp']:
@@ -186,39 +186,39 @@ def load_bil(Interferogram, dtype='f4', nanval=0):
     width = int(self.Rsc['WIDTH'])
     length = int(self.Rsc['FILE_LENGTH'])
     fullwidth = width*2
-    
+
     data = np.fromfile(self.Path, dtype=dtype, count=length*fullwidth)
-    data = np.reshape(data,(length,fullwidth)) 
+    data = np.reshape(data,(length,fullwidth))
     data[data==nanval] = np.NaN # Assumes NaNs are 0
     #print data.dtype
-    
+
     #leftArray = np.ascontiguousarray(data[:,0:width])
     mag = data[:,0:width]
     mag = orient_array(self, mag)
-    
+
     #rightArray = np.ascontiguousarray(data[:,width:fullwidth])
     phs = data[:,width:fullwidth]
     phs = orient_array(self, phs)
-    
+
     return mag, phs
 
 
 def load_cpx(Interferogram, dtype='complex64', nanval=0):
     """ Based on Roiview's ReadData() function
     """
-    self = Interferogram    
+    self = Interferogram
     data = np.fromfile(self.Path, dtype=self.DataType)
-    data = np.reshape(data,(self.Length,self.Width)) 
-    
+    data = np.reshape(data,(self.Length,self.Width))
+
     # NOTE: could customize here to read any ROI_PAC format!
     # Also add nanval when loading data
     #data = data[np.arange(0, self.Length, 1)]
-    
+
     #mag = np.hypot(data.real, data.imag) #same as abs()?
     #phs = np.arctan2(data.imag, data.real) #same as angle()?
     mag = np.abs(data)
     phs = np.angle(data)
-    
+
     mag[mag==nanval] = np.NaN
     phs[phs==nanval] = np.NaN
 
@@ -242,29 +242,29 @@ def load_mat(path, length=None, width=None):
     data = 2D numpy array
 
     Examples:
-    
+
     #. Load cumulative deformation array
-    
+
     >>> cumdef = load_mat('pix2cumdef.mat')
-    
+
     #. Load velocity map & reshape to correct dimensions
     >>> velmap = load_mat('pix2avevel.mat',set.Length,set.Width)
     """
     #print path, length, width
-    
+
     #Latest version of matlab
     try:
         print(path)
         f = h5py.File(path)
         data = list(f.values())[0]
         print('loading with h5py')
-        
+
         # Sparse Matrix
         if isinstance(data, h5py.highlevel.Group):
             data = f[prefix]['data'].value
             row_ind = f[prefix]['ir'].value
             row_ptr = f[prefix]['jc'].value
-            
+
             sparseData = scipy.sparse.csc_matrix((data,row_ind, row_ptr))
             data = np.array(sparseData.todense())
             data = np.ascontiguousarray(data) #Not sure this does anything
@@ -275,21 +275,26 @@ def load_mat(path, length=None, width=None):
         else:
             data = np.array(data)
             data = np.ascontiguousarray(data)
-            #NOTE: careful if reorienting done in some other commands... 
+            #NOTE: careful if reorienting done in some other commands...
             if length and width:
                 print(length,width)
                 data = np.fliplr(data.reshape((length, width),order='F'))
         f.close()
-    
+
     # Older versions of matlab
     except:
-        raise
+        #raise
         print('loading with scipy.io.loadmat')
+        print('WARNING: function specific to matlab timeseries ouput')
         dict = loadmat(path)
-        data = dict.popitem()[1]
+        #data = dict.popitem()[1]
+        try:
+            data = dict['pix2cumdef']
+        except:
+            data = dict['pix2avevel']
         data = data.T #transpose to match orientation from h5py
         #NOTE: reorienting done in other commands... maybe should do it here.
-        
+
     return data
 
 def load_binary_old(tsInstance, igInstance, path=None, prefix=None,dtype='<f4',orient=None):
@@ -307,15 +312,15 @@ def load_binary_old(tsInstance, igInstance, path=None, prefix=None,dtype='<f4',o
     data = 2D numpy array
 
     Examples
-    
+
     #. Load a particular .bin output file
-    
+
     >>> dem = ig.load_binary('t282.dem') #eg from get_SRTM.pl
     >>> RmpMskDef = ig.load_binary('RmpMskDef')
     """
     self = igInstance
     if prefix:
-        path = os.path.join(tsInstance.ProcDir, prefix + '_' + self.Name[:-3] + 'bin') 
+        path = os.path.join(tsInstance.ProcDir, prefix + '_' + self.Name[:-3] + 'bin')
     #print path
     width = int(self.Rsc['WIDTH'])
     length = int(self.Rsc['FILE_LENGTH'])
@@ -332,15 +337,15 @@ def load_binary_old(tsInstance, igInstance, path=None, prefix=None,dtype='<f4',o
     if (self.Rsc['ORBIT_DIRECTION'] == 'descending'):
         #print 'reorienting'
         data = np.rot90(data,2)
-    
+
     data[data==0] = np.NaN #NOTE: use NaNs or no?
     return np.ascontiguousarray(data)
-    
-    
+
+
 def load_binary(path=None, dtype='<f4'):
     """Read .bin output from matlab routines into an array
     """
-    data = np.fromfile(path, dtype=dtype) 
+    data = np.fromfile(path, dtype=dtype)
     data = np.transpose(data)
     #data[data==0] = np.NaN #NOTE: use NaNs or no?
     #data = np.ascontiguousarray(data)
@@ -354,7 +359,7 @@ def load_half(Interferogram, half=2, path=None, dtype='f4', convert2cm=False):
     .rmg format files contain two side-by-side equal dimension arrays that
     are stored in Row-Major (C) format and therefore have interleaved data
     stored as alternating matrix rows.
-    
+
     Inputs
     path = path to any .rmg format file (.rmg, .unw, .hgt)
     half = (1,2) load either first (1) or second (2) array
@@ -363,20 +368,20 @@ def load_half(Interferogram, half=2, path=None, dtype='f4', convert2cm=False):
     data = 2D numpy array
 
     Examples
-    
+
     #. Load the amplitude array in radar coods
-    
+
     >>> amp = load_half('rect_090822-073109.unw,1)
-    
+
     #2. Load the phase array from a georeferenced interferogram
-    
+
     >>> geophs = load_half('geo_stack_32rlks.unw,2,True)
     """
-    
+
     self = Interferogram
     width = int(self.Rsc['WIDTH'])
     length = int(self.Rsc['FILE_LENGTH'])
-    
+
     if path is None:
         path = self.Path
     data = np.zeros(self.Shape, dtype=dtype)
@@ -388,13 +393,13 @@ def load_half(Interferogram, half=2, path=None, dtype='f4', convert2cm=False):
         for i in rows:
             data[i,:] = np.fromfile(f, dtype=dtype, count=self.Width)
             junk = np.fromfile(f, dtype=dtype, count=self.Width)
-    
+
     data[data==0] = np.NaN
     data = orient_array(self,data)
-    
+
     if convert2cm:
         data = data * self.Phs2cm
-    
+
     return data
 
 
@@ -406,7 +411,7 @@ def load_ma(dataFile, maskFile=None):
     if maskFile is None:
         mask = ma.nomask
     else:
-        mask = np.load(maskFile) 
+        mask = np.load(maskFile)
     masked_array = ma.array(data, mask=mask)
     return masked_array
 
@@ -416,7 +421,7 @@ def load_gdal(inFile, data=True, geotrans=True, proj=True):
     """ Read any raster data format supported by GDAL into a numpy array
     returns data,geo,dim where data=numpy array or RGB array, geo=geotransform values,
     dim=array dimensions
-    
+
     Inputs
     inFile = (str) path to georeferenced file
 
@@ -427,9 +432,9 @@ def load_gdal(inFile, data=True, geotrans=True, proj=True):
     proj = EPSG integer identifier
 
     Example
-    
+
     #. Read in raster array from a GDAL accepted format
-    
+
     >>> data,geo,dim = load_gdal(<path-to-raster>)
     """
     try:
@@ -442,11 +447,11 @@ def load_gdal(inFile, data=True, geotrans=True, proj=True):
             proj = ds.GetProjection()
         else:
             proj = None
-            
+
         if data:
             nLon = ds.RasterXSize
             nLat = ds.RasterYSize
-            
+
             #single band image
             if ds.RasterCount == 1:
                 #data = ds.GetRasterBand(1).ReadAsArray()
@@ -462,7 +467,7 @@ def load_gdal(inFile, data=True, geotrans=True, proj=True):
                 data = np.dstack((r,g,b))
         else:
             data = None
-        
+
         print('Sucessfully read in file:\n{0}'.format(inFile))
         return data, geotrans, proj
 
@@ -496,12 +501,12 @@ def save_rsc(RscDict, filename):
         del RscDict['PAIR_SERIAL']
     except:
         pass #keys not in dictionay
-    
+
     #NOTE: figure out how to get nice column alignment
     with open(filename, 'w') as rsc:
         for item in list(RscDict.items()):
             rsc.write("{0}           {1}\n".format(*item))
-        
+
 
 def save_ma(dataFile, maskFile, mask_array):
     """ save a masked array as a data array and logical array in .npy format. Prepend an optional prefix if desired """
@@ -510,12 +515,12 @@ def save_ma(dataFile, maskFile, mask_array):
 
 
 def save_r4(name, array, nanvalue=0):
-    """save numpy array to ROI_PAC .r4 format """ 
+    """save numpy array to ROI_PAC .r4 format """
     array[np.isnan(array)] = 0
     array = np.flipud(array)
     array = array.flatten()
     array = array.astype('f4')
-    array.tofile(name)    
+    array.tofile(name)
     print(name)
 
 
@@ -525,24 +530,24 @@ def save_bil(IG, outpath, amp, phs, dtype='f4', nanvalue=np.NaN):
     self = IG
     (length, width) = phs.shape
     fullwidth = width*2
-    phs[np.isnan(phs)] = nanvalue 
+    phs[np.isnan(phs)] = nanvalue
     amp[np.isnan(amp)] = nanvalue
     amp = orient_array(self,amp)
     phs = orient_array(self,phs)
-    
+
     # join amplitude and phas
     join = np.zeros((length, fullwidth))
     join[:,0:width] = amp
-    join[:,width:fullwidth] = phs     
-    
-    # Save as a 
+    join[:,width:fullwidth] = phs
+
+    # Save as a
     data = join.astype(dtype)
     data.tofile(outpath)#, dtype=self.DataType)#, count=length*fullwidth) only fromfile
     #print data.dtype
     #save associated rsc file
     save_rsc(self.Rsc, outpath + '.rsc')
     #print 'save_bil Output: {0}'.format(os.path.abspath(outpath))
-    
+
     return os.path.abspath(outpath)
 
 
@@ -553,10 +558,10 @@ def save_envi(Interferogram, data, outname=None):
         outname = self.Path[:-4] + '.bin'
     #data = np.flipud(data) #.unw data must flip for proper GDAL reading, .bin shouldn't flip
     data.tofile(outname)  #keep dtype or change to specific int16? etc
-    
+
     # Write associated header
     save_envi_header(Interferogram, data, outname)
-    
+
     return outname
 
 
@@ -579,7 +584,7 @@ def save_envi_header(self, nparray, outname=None):
                        'UL_LAT':self.Rsc['Y_FIRST'],
                        'D_LON':self.Rsc['X_STEP'],
                        'D_LAT':self.Rsc['Y_STEP'].strip('-'),#strip negative
-                       'DTYPE':code} #http://www.brockmann-consult.de/beam/doc/help/general/BeamDimapFormat.html 
+                       'DTYPE':code} #http://www.brockmann-consult.de/beam/doc/help/general/BeamDimapFormat.html
 
     headerENVI ="""ENVI
 description =   {{Generated with igplot.py}}
@@ -604,40 +609,40 @@ def save_image(Interferogram, outname=None, data=None, vmin=None, vmax=None,
     """Save a 2D numpy array as a png with optional associated world file
     png has transparent background by default"""
     self = Interferogram
-    
+
     if type(data) != np.ndarray:
         #amp, data = load_bil(self)
         data = load_half(self,half=2)
     if not outname:
         outname = self.Name + '.' + format
-        
-    #NOTE: this works, but changes array dimensions through dpi &     
+
+    #NOTE: this works, but changes array dimensions through dpi &
     #fig = plt.figure()
     #plt.axis('off')
     #im = plt.imshow(data,cmap=plt.cm.jet)
     #plt.savefig(savename, transparent=True)
     if phs2cm:
         data = data * self.Phs2cm
-    
+
     if nodata:
         data[data==nodata] = np.nan
-    
+
     # Array elements=image pixels, transparent pixels are np.NaNs
     plt.imsave(outname, data, vmin=vmin, vmax=vmax, cmap=cmap, format=format)
-    
+
     if worldfile:
         # [dx,dy,rotx?,roty?,xUL,yUL]
         coords = (self.Rsc['X_STEP'], self.Rsc['Y_STEP'],'0','0',self.Rsc['X_FIRST'],self.Rsc['Y_FIRST'])
         with open(outname + 'w', 'w') as worldfile:
             worldfile.write('\n'.join(coords))
-    
+
     return os.path.abspath(outname)
-    
+
 
 def save_gdal(Interferogram=None, nparray=None, outfile=None, geotrans=None, proj=4326,
               nanval=None, format='GTiff', half=2):
     """ Write numpy array to any raster format supported by GDAL.
-    
+
     Inputs
     Interferogram = roipy.data.Interferogram instance
     nparray = np.array associated with Interferogram
@@ -648,22 +653,22 @@ def save_gdal(Interferogram=None, nparray=None, outfile=None, geotrans=None, pro
     NOTE: GMT support not necessarily built into EPD python
 
     Examples:
-    
+
     #. Save .unw as a GeoTiff in WGS84 lat/lon
-    
+
     >>> ig = rp.data.Interferogram(<path-to-ig>)
     >>> ref = (-67.8716,0.00083,0.0,-21.1199,0.0,-0.000833)
     >>> rp.tools.save_gdal(ig,'example.tif',ref,4326,'Gtiff')
     """
     self = Interferogram
-    
+
     suffi = {'GTiff':'tif',
              'ENVI':'bin'}
     try:
         suffix = suffi[format]
     except:
         suffix = ''
-    
+
     if nparray == None:
         nparray = load_half(self, half=half)
     if outfile == None:
@@ -673,7 +678,7 @@ def save_gdal(Interferogram=None, nparray=None, outfile=None, geotrans=None, pro
         nd = driver.Register()
     except:
         print("unrecognized format, check 'gdalinfo --formats'")
-    
+
     # DATA
     rows,cols = nparray.shape
     #note order: cols, rows, nbands, dtype (default GDT_Byte=uint8)
@@ -684,24 +689,24 @@ def save_gdal(Interferogram=None, nparray=None, outfile=None, geotrans=None, pro
         outBand.SetNoDataValue(nanval) #or np.NaN?
         nparray[np.isnan(nparray)] = nanval
     #order: array, xoffset, yoffset (integers)... if successful result=0
-    result = outBand.WriteArray(nparray, 0, 0) 
-    
+    result = outBand.WriteArray(nparray, 0, 0)
+
     # GEOTRANS
     if geotrans == None:
         geotrans = get_geotrans(self.Path)
     result = outDataset.SetGeoTransform(geotrans)
-    
+
     # PROJECTION
     if proj:
         outSR = osr.SpatialReference()
         result = outSR.ImportFromEPSG(proj)
         outWkt = outSR.ExportToWkt()
         result = outDataset.SetProjection(outWkt)
-    
+
     #Write to disk & Close
     outDataset.FlushCache()
-    del outDataset 
-    
+    del outDataset
+
     #print 'Done saving georeferenced file:\n{0}'.format(outfile)
     return outfile
 
@@ -720,10 +725,10 @@ def get_geotrans(geofile):
     except:
         print('ERROR Unable to load geotransform information!')
         raise
-    
+
     geotrans = (ulx, dx, xrot, uly, yrot, dy)
     #print geotrans
-    
+
     return geotrans
 
 
@@ -731,7 +736,7 @@ def gdal2grd(gdalFile, outName=None):
     """ Since EPD gdal doesn't have netCDF support, must call external command"""
     if outName == None:
         outName = gdalFile + '.grd'
-    cmd = 'gdal_translate -of GMT {0} {1}'.format(gdalFile, outName) 
+    cmd = 'gdal_translate -of GMT {0} {1}'.format(gdalFile, outName)
     print(cmd); os.system(cmd)
     return outName
 
@@ -741,7 +746,7 @@ def grd2gdal(grdFile, outName=None):
     intermediary command,,, or use scipy load_netcdf (see load_gmt()"""
     if outName == None:
         outName = grdFile + '.bin'
-    cmd = 'gdal_translate -of ENVI {0} {1}'.format(grdFile, outName) 
+    cmd = 'gdal_translate -of ENVI {0} {1}'.format(grdFile, outName)
     print(cmd); os.system(cmd)
     return outName
 
@@ -755,11 +760,11 @@ def save_kmz(Geogram, data=None, outname=None, cmap=None, vmin=None, vmax=None,
     self = Geogram
     kmzname = outname
     kmlname = kmzname[:-3] + 'kml'
-    
+
     pngpath = save_image(self, data=data, outname=outname[:-3] + 'png', cmap=cmap, vmin=vmin, vmax=vmax, nodata=nodata, phs2cm=True)
     pngname = os.path.basename(pngpath)
-    
-    
+
+
     self.Rsc['IMG'] = pngname #don't use abspath here!
     self.Rsc['CBAR'] = colorbar
     self.Rsc['N_LAT'] = float(self.Rsc['Y_FIRST'])
@@ -767,17 +772,17 @@ def save_kmz(Geogram, data=None, outname=None, cmap=None, vmin=None, vmax=None,
     self.Rsc['W_LON'] = float(self.Rsc['X_FIRST'])
     self.Rsc['E_LON'] = self.Rsc['W_LON'] + (float(self.Width) * float(self.Rsc['X_STEP']))
     self.Rsc['KML'] = kmlname
-    
+
     #cludge fix
     if 'ORBIT_NUMBER' not in self.Rsc:
         self.Rsc['ORBIT_NUMBER'] = 'N/A'
-    
+
     #NOTE: avoid use of Timespan to just show image automatically...
     headertxt = """<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://earth.google.com/kml/2.1">
     <Document>
     """
-    
+
     overlaytxt = """
           <GroundOverlay>
             <name> {PAIR} </name>
@@ -795,7 +800,7 @@ def save_kmz(Geogram, data=None, outname=None, cmap=None, vmin=None, vmax=None,
             </LatLonBox>
         </GroundOverlay>
     """.format(**self.Rsc)
-    
+
     # to put colorbar in lower left change overlay & screen to y=0
     # to resize so that it is always 1/2 widow size set size y=0
     # should save with bold font, high resolution, looks iffy...
@@ -811,13 +816,13 @@ def save_kmz(Geogram, data=None, outname=None, cmap=None, vmin=None, vmax=None,
     <size x="0" y="0" xunits="pixels" yunits="fraction"/>
     </ScreenOverlay>
     """.format(**self.Rsc)
-    
-    
+
+
     footertxt = """
     </Document>
 </kml>
     """
-    
+
     kml = open(kmlname, 'w')
     kml.write(headertxt)
     kml.write(overlaytxt)
@@ -833,14 +838,14 @@ def save_kmz(Geogram, data=None, outname=None, cmap=None, vmin=None, vmax=None,
     if colorbar:
         kmz.write(colorbar,compress_type=zipfile.ZIP_DEFLATED)
     kmz.close()
-    
+
     #NOTE: commented out b/c automatic time slider in GE is annoying, could be
     #cool to show development of deformation though...
     #<TimeSpan>
     #    <begin> {DATE1} </begin>
     #    <end> {DATE2} </end>
     #</TimeSpan>
-    
+
     return kmzname
 
 
@@ -855,7 +860,7 @@ def basemap2overlay(bmap, geotrans, x, y):
     y0 = geotrans[3] #top left latitude
     dx = geotrans[1] #pixel width
     dy = geotrans[5] #pixel height
-    
+
     #row = int((lon - x0) / dx)
     #col = int((lat - y0) / dy)
     col = int((lon - x0) / dx)
@@ -868,7 +873,7 @@ def overlay2basemap(bmap, geotrans, row, col):
     y0 = geotrans[3] #top left latitude
     dx = geotrans[1] #pixel width
     dy = geotrans[5] #pixel height
-    
+
     x = x0 + (row * dx)
     y = y0 + (col * dy)
     lon,lat = bmap(x,y)
@@ -891,7 +896,7 @@ def load_overlay(path, convert2cm=False):
     except:
         #raise
         image, geotrans, proj = load_gdal(path)
-        
+
     nLat, nLon = image.shape[:2] #3rd= number of bands
     x0 = geotrans[0] #top left longitude
     dx = geotrans[1] #pixel width
@@ -901,8 +906,8 @@ def load_overlay(path, convert2cm=False):
     dy = geotrans[5] #pixel height
     LL = (x0, y0 + dy*nLat) #NOTE: make sure dy is correct sign
     UR = (x0 + dx*nLon, y0)
-    extent = (LL[0], UR[0], LL[1], UR[1]) 
-    
+    extent = (LL[0], UR[0], LL[1], UR[1])
+
     return image, extent
 
 
@@ -911,54 +916,54 @@ def calc_ramp(array, ramp='quadratic', custom_mask=None):
     Remove a quadratic surface from the interferogram Subtracting
     the best-fit quadratic surface forces the background mean surface
     displacement to be zero
-    
+
     Note: exclude known signal, unwrapping errors, etc. with custom_mask
-    
+
     ramp = 'dc','linear','quadratic'
-    
+
     returns ramp
     """
-    X,Y = np.indices(array.shape) 
+    X,Y = np.indices(array.shape)
     x = X.reshape((-1,1))
     y = Y.reshape((-1,1))
-    
+
     # Work with numpy mask array
     phs = ma.masked_invalid(array)
-    
+
     if custom_mask != None:
         phs[custom_mask] = ma.masked
-    
+
     d = phs.reshape((-1,1))
     g = ~d.mask
     dgood = d[g].reshape((-1,1))
 
     if ramp == 'quadratic':
         print('fit quadtratic surface')
-        G = np.concatenate([x, y, x*y, x**2, y**2, np.ones_like(x)], axis=1) #all pixels        
+        G = np.concatenate([x, y, x*y, x**2, y**2, np.ones_like(x)], axis=1) #all pixels
         Ggood = np.vstack([x[g], y[g], x[g]*y[g], x[g]**2, y[g]**2, np.ones_like(x[g])]).T
         try:
             m,resid,rank,s = np.linalg.lstsq(Ggood,dgood)
         except ValueError as ex:
             print('{}: Unable to fit ramp with np.linalg.lstsq'.format(ex))
-            
-            
+
+
     elif ramp == 'linear':
         print('fit linear surface')
         G = np.concatenate([x, y, x*y, np.ones_like(x)], axis=1)
-        Ggood = np.vstack([x[g], y[g], x[g]*y[g], np.ones_like(x[g])]).T  
+        Ggood = np.vstack([x[g], y[g], x[g]*y[g], np.ones_like(x[g])]).T
         try:
             m,resid,rank,s = np.linalg.lstsq(Ggood,dgood)
         except ValueError as ex:
             print('{}: Unable to fit ramp with np.linalg.lstsq'.format(ex))
-    
+
     elif ramp == 'dc':
         G = np.ones_like(phs)
         m = np.mean(phs)
         print('fit dc offset')
-    
+
     ramp = np.dot(G,m)
     ramp = ramp.reshape(phs.shape)
-    
+
     return ramp
 
 
@@ -1002,7 +1007,7 @@ def latlon2range_cp(pointLat,pointLon,gridLat,gridLon):
         Lon,Lat = rp.tools.get_grid(Geo)
         radial_distances = latlon2range_cp(-22,-67,Lat,Lon)
     """
-    req = 6378.136 
+    req = 6378.136
     rp = 6356.751
 
     twopi = 2*np.pi
@@ -1017,7 +1022,7 @@ def latlon2range_cp(pointLat,pointLon,gridLat,gridLon):
     #dlat1[np.abs(dlat1) < piover2] = np.arctan(epsln * np.tan(dlat1))
     if np.abs(dlat1) < piover2:
         dlat1 = np.arctan(epsln * np.tan(dlat1))
-    
+
     index = np.abs(dlat2) < piover2
     dlat2[index] = np.arctan(epsln*np.tan(dlat2))[index]
     # broadcasting
@@ -1030,7 +1035,7 @@ def latlon2range_cp(pointLat,pointLon,gridLat,gridLon):
     #dlon[dlon >  pi] = dlon+twopi
     dlon = np.where(((dlon < -np.pi) & (dlon > np.pi)), dlon+twopi, dlon)
     #index = (dlon < -pi) & (dlon > pi) #NOTE: can't use python 'and' here, need numpy '&'
-    
+
     # scott's version
     e2 = 1 - (rp/req)**2
     q = 1 - e2*np.sin(alat)**2
@@ -1073,22 +1078,22 @@ def latlon2range(lat1,lon1,lat2,lon2,output='hypot'):
     dlon2 = np.radians(lon2)
 
     epsln = (req/rp)**2
-    
- 
+
+
     ind = (np.abs(dlat1) < piover2)
     dlat1[ind] = np.arctan(epsln * np.tan(dlat1[ind]))
-    
+
     ind = (np.abs(dlat2) < piover2)
     dlat2[ind] = np.arctan(epsln * np.tan(dlat2[ind]))
 
     alat = (dlat1+dlat2)/2
     dlat = dlat2-dlat1
     dlon = dlon1-dlon2
-    
+
 
     ind = np.logical_or(dlon < -np.pi, dlon >  np.pi)
     dlon[ind] += twopi
-    
+
     # scott's Euclidean distance version
     e2 = 1 - (rp/req)**2
     q = 1 - e2*np.sin(alat)**2
@@ -1101,8 +1106,8 @@ def latlon2range(lat1,lon1,lat2,lon2,output='hypot'):
         d = -vlon
     else:
         d = np.hypot(ulat, vlon) #euclidean distance in km
-    
-    
+
+
     return d
 
 
@@ -1111,12 +1116,12 @@ def distance_pyproj(lat1,lon1,lat2,lon2):
     distance using pyproj, which draws on PROJ.4 library
     NOTE: only works between single points, not numpy arrays...
     """
-    geod = pyproj.Geod(ellps='WGS84') 
+    geod = pyproj.Geod(ellps='WGS84')
     angle1,angle2,distance = geod.inv(lon1, lat1, lon2, lat2)
-    
+
     #angle1 = bearing
     #angle2 = back azimuth
-    
+
     return distance
 
 
@@ -1124,9 +1129,9 @@ def distance_pyproj(lat1,lon1,lat2,lon2):
 def distance_haversine(point1, point2, radius=6371e3):
     """ calculate the haversine distance between points (lon,lat)
     accurate over short distances (~3m accuracy over 1km)
-   
+
     usage: d = distance_haversine((lon1,lat1), (lon2,lat2))
-    
+
     distance formulas from:
     http://www.movable-type.co.uk/scripts/latlong.html
     """
@@ -1147,11 +1152,11 @@ def distance_cosines(point1, point2, radius=6371e3):
     accurate over large distances (~3m accuracy over 1km using/ float64) """
     lon1, lat1 = np.radians(point1)
     lon2, lat2 = np.radians(point2)
-    
+
     dlon = lon2 - lon1
     distance = radius * (np.arccos(np.sin(lat1)*np.sin(lat2) +
                                    np.cos(lat1)*np.cos(lat2)*np.cos(dlon)))
-    
+
     return distance
 
 
@@ -1164,12 +1169,12 @@ def distance_cyl(point1, point2, radius=6371e3):
     #km2Nmi = 1/1.852 #nautical mile
     lon1, lat1 = np.radians(point1)
     lon2, lat2 = np.radians(point2)
-    
+
     x = (lon2 - lon1) * np.cos((lat1+lat2)/2)
     y = lat2 - lat1
-    
+
     distance = np.hypot(x,y) * radius
-    
+
     return distance
 
 
@@ -1180,14 +1185,14 @@ def bearing(point1, point2):
     lon2, lat2 = np.radians(point2)
     dlat = lat2 - lat1
     dlon = lon2 - lon1
-    
+
     y = np.sin(dlon)*np.cos(lat2)
     x = np.cos(lat1)*np.sin(lat2) - np.sin(lat1)*np.cos(lat2)*np.cos(dlon)
     bearing = np.arctan2(y, x) #in radians (-pi, pi)
-    
+
     bearingDeg = (np.degrees(bearing) + 360) % 360
     #NOTE back azimuth conversion backDeg = (bearing + 180) % 360
-    
+
     return bearingDeg
 
 
@@ -1195,17 +1200,17 @@ def cross_track(start, end, point, radius=6371e3, dist='haversine'):
     """ shortest distance from point to great circle path (aka 'cross-track error')
     start = p1, end = p2, point = p3 (lon,lat) degrees
     NOTE: negative implies to the west of the line
-    """    
+    """
     if dist=='haversine':
         d13 = distance_haversine(start, point,radius=radius)
     elif dist=='cyl':
         d13 = distance_cyl(start,point,radius=radius)
-        
+
     theta13 = np.radians(bearing(start,point))
     theta12 = np.radians(bearing(start,end))
-    
+
     distance = radius * np.arcsin(np.sin(d13/radius)*sin(theta13-theta12))
-    
+
     return distance
 
 
@@ -1215,7 +1220,7 @@ def distance_vicenty(point1, point2, radius=6371e3):
     http://en.wikipedia.org/wiki/Great-circle_distance
     """
     print('Use latlon2range function')
-    
+
 
 # ============================================================================ #
 # COMMON OPERATIONS
@@ -1242,7 +1247,7 @@ def fit_surface(array, type='quad', show=False):
         yf = y.flatten()
         df = array.flatten()
         g, = np.isfinite(df).nonzero() #NOTE: not sure if comma is needed..
-        
+
         G = np.array([np.ones(np.size(g)), xf[g], yf[g], xf[g]**2, xf[g]*yf, yf[g]**2])
         m, res, rank, singval = np.linalg.lstsq(G.T, df)
         print('fit coefficients:', m)
@@ -1280,7 +1285,7 @@ def geotrans2grid(geotrans,data):
     """ Return X, Y meshgrids for 2D modeling """
     nx = data.shape[1]
     ny = data.shape[0]
-    
+
     ullon = geotrans[0]
     dlon = geotrans[1]
     ullat = geotrans[3]
@@ -1288,9 +1293,9 @@ def geotrans2grid(geotrans,data):
     lons = ullon + dlon*np.arange(nx)
     lats = ullat + dlat*np.arange(ny)
     Xi,Yi = np.meshgrid(lons,lats)
-    
+
     return Xi,Yi
-    
+
 
 
 def get_grid(geo, center=True):
@@ -1303,22 +1308,22 @@ def get_grid(geo, center=True):
     xmin = float(geo.Rsc['X_FIRST'])
     nx = int(geo.Rsc['WIDTH'])
     xmax = xmin + (nx * float(geo.Rsc['X_STEP']))
-    
-    
+
+
     ymax = float(geo.Rsc['Y_FIRST'])
     ny = int(geo.Rsc['FILE_LENGTH']) #negative...
     ymin = ymax + (ny * float(geo.Rsc['Y_STEP']))
-    
+
     if center:
         shiftx = float(geo.Rsc['X_STEP']) / 2
         shifty = float(geo.Rsc['Y_STEP']) / 2
     else:
         shiftx = 0
         shifty = 0
-        
+
     lons = np.linspace(xmin+shiftx, xmax+shiftx, nx)
     lats = np.linspace(ymax+shifty, ymin+shifty, ny)
-    
+
     Xi,Yi = np.meshgrid(lons,lats)
 
     return Xi,Yi
@@ -1352,16 +1357,16 @@ def export_latex_table_agu(Set, baseline_list='list.out', outdir='.', runTeX=Fal
     Line spacing is determined by document class. runTeX=1 to automatically
     convert .tex output into pdf"""
     self = Set
-    
+
     # Load baselines if not yet loaded
     if not hasattr(self,'Baselines'):
         self.load_baselines(baseline_list)
         #self.assign_baselines() #within load_baselines
-    
+
     texFile = os.path.join(self.Track + '_agu.tex')
     tex = open(texFile, 'w')
-    
-    # Write Header 
+
+    # Write Header
     tex.write(r"""%% Automatically generated LaTeX table
 \documentclass[draft,grl]{AGUTeX}
 \usepackage{longtable}
@@ -1390,7 +1395,7 @@ Continued on next page...\\
 \endlastfoot
 
 """ % self.Track)
-    
+
     #Write details for each file
     #NOTE: could change date format if desired...
     for ig in self:
@@ -1403,10 +1408,10 @@ Continued on next page...\\
 \end{center}
 \end{document}
 """)
-    
+
     print('Wrote {} interferogram stats'.format(len(self)))
     print('Output: {0}'.format(texFile))
-    
+
     if runTeX:
         os.system('latex {}'.format(texFile))
         os.system('dvipdf {}'.format(texFile.replace('tex','dvi')))
@@ -1417,7 +1422,7 @@ def get_stats(Interferogram, histogram=False):
 	self.amp_stats = {}
 	self.phs_stats = {}
 	amp,phs = load_bil(Interferogram)
-	
+
 	for d,data in zip([self.amp_stats, self.phs_stats],[amp,phs]):
 		d['min'] = np.nanmin(data)
 		d['max'] = np.nanmax(data)
@@ -1430,15 +1435,15 @@ def get_stats(Interferogram, histogram=False):
 def export_latex_table(Set, baseline_list='list.out', outdir='.', runTeX=False):
     """Interferogram table, max length 1 page"""
     self = Set
-    
+
     # Load baselines if not yet loaded
     if not hasattr(self,'Baselines'):
         self.load_baselines(baseline_list)
         #self.assign_baselines() #within load_baselines
-    
+
     texFile = os.path.join(self.Track + '.tex')
     tex = open(texFile, 'w')
-    
+
     #Write Header
     tex.write(r"""%% Automatically generated LaTeX table
 \documentclass[11pt]{amsart}
@@ -1455,7 +1460,7 @@ def export_latex_table(Set, baseline_list='list.out', outdir='.', runTeX=False):
 \bf{Dates} & \bf{Platform} & \bf{Timespan} (yr) & \bf{Baseline$_\perp$} (m) \\
 \hline
 """ % self.Track)
-    
+
     #Write details for each file
     #NOTE: could change date format if desired...
     for ig in self:
@@ -1470,7 +1475,7 @@ def export_latex_table(Set, baseline_list='list.out', outdir='.', runTeX=False):
 """)
     print('Wrote {} interferogram stats'.format(len(self)))
     print('Output: {0}'.format(texFile))
-    
+
     if runTeX:
         os.system('latex {}'.format(texFile))
         os.system('dvipdf {}'.format(texFile.replace('tex','dvi')))
@@ -1479,15 +1484,15 @@ def export_latex_table(Set, baseline_list='list.out', outdir='.', runTeX=False):
 def export_latex_table_long(Set, baseline_list='list.out', outdir='.', runTeX=False):
     """Interferogram table, max length 1 page"""
     self = Set
-    
+
     # Load baselines if not yet loaded
     if not hasattr(self,'Baselines'):
         self.load_baselines(baseline_list)
         #self.assign_baselines() #within load_baselines
-    
+
     texFile = os.path.join(self.Track + '_long.tex')
     tex = open(texFile, 'w')
-    
+
     #Write Header
     tex.write(r"""%% Automatically generated LaTeX table
 \documentclass[11pt]{amsart}
@@ -1523,7 +1528,7 @@ Continued on next page...\\
 \hline \hline
 \endlastfoot
 """ % self.Track)
-    
+
     #Write details for each file
     #NOTE: could change date format if desired...
     for ig in self:
@@ -1620,7 +1625,7 @@ def extents2kml(ig):
 			<outerBoundaryIs>
 				<LinearRing>
 					<coordinates>
-						{LON_REF1},{LAT_REF1},0 {LON_REF2},{LAT_REF2},0 {LON_REF4},{LAT_REF4},0 {LON_REF3},{LAT_REF3},0 {LON_REF1},{LAT_REF1},0 
+						{LON_REF1},{LAT_REF1},0 {LON_REF2},{LAT_REF2},0 {LON_REF4},{LAT_REF4},0 {LON_REF3},{LAT_REF3},0 {LON_REF1},{LAT_REF1},0
 					</coordinates>
 				</LinearRing>
 			</outerBoundaryIs>
@@ -1628,10 +1633,10 @@ def extents2kml(ig):
 	</Placemark>
 </Document>
 </kml>
-'''.format(**ig.Rsc)       
+'''.format(**ig.Rsc)
         )
     print('wrote:', name)
-    
+
 
 def geocode(Interferogram, transFile, data=None, outname=None, kml=False):
     """call geocode.pl, which makes rect_lookup & rsc
@@ -1639,20 +1644,20 @@ def geocode(Interferogram, transFile, data=None, outname=None, kml=False):
     print('running geocode.pl')
     self = Interferogram
     inname = self.Name
-    
+
     #NOTE: output to cwd, get rid of 32rlks, append geo prefix
     if outname == None:
         outname = 'geo_' + self.Name.replace('_32rlks','')
-        
-    
+
+
     if type(data) is np.ndarray:
         amp = load_half(self,1)
         inname = save_bil(self, 'tmp.unw', amp, data)
-    
+
     cmd = 'geocode.pl {0} {1} {2}'.format(transFile, inname, outname)
     print(cmd)
     os.system(cmd)
-    
+
     #NOTE: not working b/c perl script has multiple returns throughout script
     #NOTE: could try subprocess instead of os.system()...
     # eg whether or not keywords exist
@@ -1661,7 +1666,7 @@ def geocode(Interferogram, transFile, data=None, outname=None, kml=False):
     #if kml:
     #    unw2png(geogram)
     #return geogram
-    
+
     return outname
 
 
@@ -1680,7 +1685,7 @@ def georef_timeseries(Timeseries):
     """
     print('Work in progress')
     os.mkdir('tmp_geotimeseries')
-    
+
 
 def georef_timeseries_smooth(Timeseries):
     """ Instread"""
@@ -1689,7 +1694,7 @@ def georef_timeseries_smooth(Timeseries):
 def animation_kml_timeseries(Timeseries):
     """save a kml with output from georef_timeseries """
     print('work in progress')
-    
+
 
 def georeference(Interferogram, trans, rsc, data=None, outname='rect_result.unw',
                  dtype='f4', nanval=np.nan, nlooks=1):
@@ -1697,14 +1702,14 @@ def georeference(Interferogram, trans, rsc, data=None, outname='rect_result.unw'
     NOTE: use geocode instead!
     call ROI_PAC rect_lookup.pl command to georeference a file or array.
     NOTE: outname must start with 'rect_' !!!
-    
+
     Keyword arguments:
-    
+
         .. tabularcolumns:: |l|L|
-    
+
         =============   ====================================================
-        Keyword         Description      
-        =============   ==================================================== 
+        Keyword         Description
+        =============   ====================================================
         Interferogram   :class:`~roipy.data.Interferogram` instance
         amp             (np.array) amplitude values
         phs             (np.array) phase or deformation values
@@ -1715,24 +1720,24 @@ def georeference(Interferogram, trans, rsc, data=None, outname='rect_result.unw'
     Outputs:
     geo_<>.unw,  geo_<>.unw.rsc
 
-    Examples:   
-    
+    Examples:
+
     #. view an interferogram in Google Earth:
-    
+
     >>> ig = rp.data.Interferogram(path)
     >>> outpath = rp.tools.georeference(ig, './geomap.trans')
     >>> ig_g = rp.data.Interferogram(outpath)
     >>> rp.tools.save_kmz(ig_g)
-    
+
     #. georeference a stack
-    
+
     >>> ts = rp.timeseries.Timeseries(set89, 'all')
     >>> stack = rp.plot.stack(ts)
     >>> ig = set89[0]
     >>> rp.tools.georeference(ig, 'geomap.trans', 'geo.rsc', stack')
     """
     #NOTE: can just call geocodem.pl and avoid copying the geo.rsc file at the end
-    
+
     self = Interferogram
     #save numpy array as unw with rsc
     #if (type(amp) is np.ndarray) and (type(phs) is np.ndarray):
@@ -1747,9 +1752,9 @@ def georeference(Interferogram, trans, rsc, data=None, outname='rect_result.unw'
     else:
         path = self.Path #if georeferencing any old interferogram
         name = self.Name
-    
+
     # NOTE: Only needed for wrapped interferograms
-    # NOTE: should be able to 
+    # NOTE: should be able to
     #Get metadata for transfile & write rect_lookup.in file
     transRSC = load_rsc(trans + '.rsc')
     transRSC['TRANS'] = trans
@@ -1769,7 +1774,7 @@ def georeference(Interferogram, trans, rsc, data=None, outname='rect_result.unw'
     Output Image File Name                 (-)   = {OUTPUT}			! output filename
     Lookup File Start Sample for Output    (-)   = {XMIN}      		! pixel across
     Number of Samples for Output           (-)   = {NUMCOL}     		! number of pixels
-    Lookup File Start Line for Output      (-)   = {YMIN}    		! start line 
+    Lookup File Start Line for Output      (-)   = {YMIN}    		! start line
     Number of Lines for Output             (-)   = {NUMROW}      		! number of lines
     Skip Every N Lookup points Across-Down (-)   = 1 1        			! across , down
     File Type                              (-)   = RMG         			! [RMG,CPX]
@@ -1789,11 +1794,11 @@ def georeference(Interferogram, trans, rsc, data=None, outname='rect_result.unw'
     #cmd = 'cp {self.Rsc} {OUTPUT}.rsc'.format(transRSC)
     #os.system(cmd4)
     shutil.copyfile(rsc, transRSC['OUTPUT'] + '.rsc')
-    
-    # downsample result if requested    
+
+    # downsample result if requested
     if nlooks != 1:
        transRSC['OUTPUT'] = lookdown(transRSC['OUTPUT'], nlooks)
-    
+
     # Return georeferenced interferogram object
     geo = roipy.data.Geogram(transRSC['OUTPUT'])
     print(os.path.abspath(transRSC['OUTPUT']))
@@ -1824,15 +1829,15 @@ def get_cart2los(geoincidenceFile):
     # NOTE: assumes standarard WGS84lat/lon format of file
     geo = roipy.data.Geogram(geoincidenceFile)
     look,head = load_bil(geo)
-    
+
     look = np.deg2rad(look)
     head = np.deg2rad(head)
 
     # Convention is negative --> reduction in line of sight, therefore uplift
     EW2los = np.sin(head) * np.sin(look)
-    NS2los = np.cos(head) * np.sin(look) 
+    NS2los = np.cos(head) * np.sin(look)
     Z2los = -np.cos(look)
-    
+
     # Change convention to uplift --> positive
     cart2los = -np.dstack([EW2los, NS2los, Z2los])
 
@@ -1865,10 +1870,9 @@ def crop_grds(grd1, grd2, bounds=None):
     else:
         cmd = 'grdsample {0} -G{1}'.format(grd1,out1)
         print(cmd); os.system(cmd)
-    
+
     out2 = grd2[:-4] + '_crop.grd'
     cmd = 'grdsample {0} -G{1} -R{2}'.format(grd2,out2,out1)
     print(cmd); os.system(cmd)
-    
+
     return out1, out2
-    
