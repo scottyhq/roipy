@@ -1657,8 +1657,8 @@ def geocode(Interferogram, transFile, data=None, outname=None, kml=False):
     cmd = 'geocode.pl {0} {1} {2}'.format(transFile, inname, outname)
     print(cmd)
     os.system(cmd)
-
-    #NOTE: not working b/c perl script has multiple returns throughout script
+    #
+    #NOTE: doesn't work with shell shortcuts (such as ~/test.txt)
     #NOTE: could try subprocess instead of os.system()...
     # eg whether or not keywords exist
     #sleep(10)
