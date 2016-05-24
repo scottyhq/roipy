@@ -282,8 +282,8 @@ def load_mat(path, length=None, width=None):
         f.close()
 
     # Older versions of matlab
-    except:
-        #raise
+    except Exception as e:
+        print(e)
         print('loading with scipy.io.loadmat')
         print('WARNING: function specific to matlab timeseries ouput')
         dict = loadmat(path)

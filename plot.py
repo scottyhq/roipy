@@ -1849,9 +1849,12 @@ def calc_timeseries_ave(Timeseries, cumdef=None, index=None, showloc=False):
     #NOTE: descending tracks are read in flipped up-down,
     #ascending tracks are read in flipped left-right
     if self.Orbit == 'descending':
-        indmat = (length - index[0], index[1])
-    else:
         indmat = (index[0], width - index[1])
+    else:
+    #   indmat = (index[0], width - index[1])
+        indmat = index
+
+
     dates = np.array(pltdate.num2date(self.DatesSerial))
 
     area = []
@@ -1870,8 +1873,8 @@ def calc_timeseries_ave(Timeseries, cumdef=None, index=None, showloc=False):
         tsVel = -1 * tools.load_mat(path, self.Length, self.Width)
         tsVel = tsVel.reshape((self.Length, self.Width),order='F')
         # NOTE: commented out 10/2/13 b/c taken care of in load_mat? -SH
-        if self.Orbit == 'descending': #Depends on version of matlab filel it seems...
-            tsVel = np.rot90(tsVel,2)
+        #if self.Orbit == 'descending': #Depends on version of matlab filel it seems...
+        #    tsVel = np.rot90(tsVel,2)
         #pcolor(tsVel, '{0} Best-fit Linear Velocity'.format(self.Track))
         #NOTE: must use plt.imshow to interact w/ figure in ipython...
         im = plt.imshow(tsVel, cmap=plt.cm.jet)
@@ -1932,6 +1935,8 @@ def calc_timeseries(Timeseries, cumdef=None, index=None, showloc=False):
         # NOTE: commented out 10/2/13 b/c taken care of in load_mat? -SH
         if self.Orbit == 'descending':
             tsVel = np.rot90(tsVel,2)
+        else:
+            tsVel = np.fliplr(tsVel)
         #pcolor(tsVel, '{0} Best-fit Linear Velocity'.format(self.Track))
         #NOTE: must use plt.imshow to interact w/ figure in ipython...
         im = plt.imshow(tsVel, cmap=plt.cm.jet)
@@ -2052,6 +2057,8 @@ def timeseries(Timeseries, index=('row','col'), cumdef=None, order=1, annotate=N
 
     fig.autofmt_xdate() #Angle dates #NOT working if ax passed to another function...?
     plt.ylabel(r'$\Delta LOS$ (cm)')
+    ax.set_xlim(datetime.date(1990,1,1), datetime.date(2011,1,1))
+    ax.set_ylim(-0.1, 15)
     #plt.legend(loc=2)
     #plt.draw()
     if save:
