@@ -219,7 +219,7 @@ def calc_linmax_dPt(tn,dVdt,xoff=0,yoff=0,d=3e3,a=500.0,dP=100e6,mu=4e9,
 
 
 def calc_genmax(x,y,t,xoff=0,yoff=0,d=4e3,dP=100e6,a=700,nu=0.25,G=30e9,
-                    mu1=0.5,eta=2e16,output='cyl'):
+                    mu1=0.5,eta=2e16,output='cyl',**kwargs):
     """ Solution for spherical source in a generalized maxwell viscoelastic
     halfspace based on Del Negro et al 2009.
 
